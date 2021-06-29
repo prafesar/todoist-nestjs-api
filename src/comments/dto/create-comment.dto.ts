@@ -3,10 +3,10 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 export class CreateCommentDto {
   
   @IsNotEmpty()
-  taskId: string;
+  task_id: string;
 
   @IsNotEmpty()
-  UserId: string;
+  user_id: string;
   
   @IsOptional()
   title?: string;
