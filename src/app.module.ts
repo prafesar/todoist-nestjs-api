@@ -3,6 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { configValidationSchema } from './config.schema';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -24,8 +29,14 @@ import { configValidationSchema } from './config.schema';
         database: configService.get('DB_DATABASE'),
       }),
     }),
+    AuthModule,
+    UsersModule,
+    ProjectsModule,
+    TasksModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
 })
+
 export class AppModule {}
