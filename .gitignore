@@ -5,6 +5,8 @@
 # dotenv environment variables file
 .env
 .env.test
+.env.stage.dev
+.env.stage.prod
 
 # Logs
 logs
