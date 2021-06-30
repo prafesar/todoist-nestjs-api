@@ -4,11 +4,11 @@ import { ProjectStatus } from '../project-status.enum';
 
 type sortType = 'asc' | 'desc';
 
-export class GetTasksFilterDto {
+export class GetProjectsFilterDto {
 
   @IsOptional()
   @IsString()
-  user?: string;
+  userId?: string; // search all projects by userId
 
   @IsOptional()
   @IsEnum(ProjectStatus)

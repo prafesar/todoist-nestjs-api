@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateTaskDto {
+export class CreateProjectDto {
   
   @IsNotEmpty()
   authorId: string;
