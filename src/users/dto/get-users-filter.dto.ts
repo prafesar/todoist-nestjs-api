@@ -1,10 +1,10 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class GetUserFilterDto {
+export class GetUsersFilterDto {
 
   @IsOptional()
   @IsString()
-  project?: string;
+  projectId?: string;
 
   @IsOptional()
   @IsString()

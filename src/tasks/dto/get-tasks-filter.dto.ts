@@ -9,11 +9,11 @@ export class GetTasksFilterDto {
 
   @IsOptional()
   @IsString()
-  project?: string;
+  projectId?: string;
 
   @IsOptional()
   @IsString()
-  user?: string;
+  authorId?: string;
 
   @IsOptional()
   @IsEnum(TaskStatus)
