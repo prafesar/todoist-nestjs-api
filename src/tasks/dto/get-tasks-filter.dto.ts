@@ -1,10 +1,12 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { sortType } from 'src/types/sort';
+
 import { TaskPriority } from '../task-priority.enum';
 import { TaskStatus } from '../task-status.enum';
 
+type sortType = 'asc' | 'desc';
+
 export class GetTasksFilterDto {
-  
+
   @IsOptional()
   @IsString()
   project?: string;
