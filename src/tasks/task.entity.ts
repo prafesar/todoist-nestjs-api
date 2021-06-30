@@ -14,8 +14,8 @@ export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  authorId: string;
+  // @Column()
+  // authorId: string;
 
   @CreateDateColumn()
   createdDate: Date;
