@@ -17,6 +17,9 @@ export class Task {
   // @Column()
   // authorId: string;
 
+  // @Column()
+  // prjectId: string;
+
   @CreateDateColumn()
   createdDate: Date;
 
