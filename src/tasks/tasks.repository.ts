@@ -4,6 +4,7 @@ import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { TaskPriority } from './task-priority.enum';
 
 // import { User } from '../auth/user.entity';
 
@@ -36,6 +37,7 @@ export class TasksRepository extends Repository<Task> {
       title,
       description,
       status: TaskStatus.OPEN,
+      priority: TaskPriority.MEDIUM,
     });
 
     await this.save(task);
