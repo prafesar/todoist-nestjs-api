@@ -6,8 +6,10 @@ import {
   Unique
 } from 'typeorm';
 
+import { UserRole } from './user-role.enum';
+
 @Entity()
-@Unique(['login', 'email'])
+@Unique(['email'])
 export class User {
 
   @PrimaryGeneratedColumn('uuid')
@@ -16,13 +18,13 @@ export class User {
   @CreateDateColumn()
   createdDate: Date;
   
-  @Column()
-  login: string;
-
   @Column() 
   email: string;
 
   @Column()
   passHash: string;
+
+  @Column()
+  role: UserRole;
 
 }
