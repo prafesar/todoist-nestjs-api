@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 import { TaskPriority } from './task-priority.enum';
 import { TaskStatus } from './task-status.enum';
@@ -10,10 +15,10 @@ export class Task {
   id: string;
 
   @Column()
-  user_id: string;
+  authorId: string;
 
-  @Column() 
-  dateCreated: string;
+  @CreateDateColumn()
+  createdDate: Date;
 
   @Column()
   title: string;

@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
+
 import { ProjectStatus } from './project-status.enum';
 
 @Entity()
@@ -8,10 +14,10 @@ export class Project {
   id: string;
 
   @Column()
-  user_id: string;
+  authorId: string;
 
-  @Column() 
-  dateCreated: string;
+  @CreateDateColumn()
+  createdDate: Date;
 
   @Column()
   title: string;

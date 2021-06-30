@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Comment {
@@ -6,14 +11,14 @@ export class Comment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column() 
-  dateCreated: string;
+  @CreateDateColumn()
+  createdDate: Date;
 
   @Column()
-  user_id: string;
+  authorId: string;
 
   @Column()
-  task_id: string;
+  taskId: string;
 
   @Column()
   title: string;
