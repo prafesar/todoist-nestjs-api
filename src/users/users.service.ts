@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
 import { UserRole } from './user-role.enum';
 import { UsersRepository } from './users.repository';
-import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { AuthCredentialsDto } from 'src/auth/dto/auth-credentials.dto';
 
 @Injectable()
@@ -18,6 +17,10 @@ export class UsersService {
     return this.usersRepository.createUser(authCredentialsDto);
   }
 
+  async getUsers(): Promise<User[]> {
+    return this.usersRepository.getUsers();
+  }
+
   async getUserById(id: string): Promise<User> {
     const found = await this.usersRepository.findOne(id);
     if (!found) {
@@ -26,8 +29,12 @@ export class UsersService {
     return found;
   }
 
-  async getUsers(filterDto: GetUsersFilterDto): Promise<User[]> {
-    return this.usersRepository.getUsers(filterDto);
+  async getUserByEmail(email: string): Promise<User> {
+    const found = await this.usersRepository.findOne({ email });
+    if (!found) {
+      throw new NotFoundException(`User with email: ${email} not found`);
+    }
+    return found;
   }
 
   async deleteUser(id: string): Promise<void> {

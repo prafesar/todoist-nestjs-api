@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { UserRole } from './user-role.enum';
 import { AuthCredentialsDto } from '../auth/dto/auth-credentials.dto';
-import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
@@ -30,18 +29,7 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
-  async getUsers(filterDto: GetUsersFilterDto): Promise<User[]>  {
-    const { projectId, search } = filterDto;
-    
-    const query = this.createQueryBuilder('user');
-
-    if (search) {
-      query.andWhere(
-        'LOWER(user.email) LIKE LOWER(:search) LIKE LOWER(:search)',
-        { search: `%${search}%` },
-      );
-    }
-
-    return await query.getMany();
+  async getUsers(): Promise<User[]> {
+    return await this.createQueryBuilder("user").getMany();
   }
 }

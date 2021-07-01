@@ -4,13 +4,11 @@ import {
   Delete,
   Patch,
   Body,
-  Query,
   Param,
 } from '@nestjs/common';
 
 import { User } from './user.entity';
 import { UsersService } from './users.service';
-import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Controller('users')
@@ -18,8 +16,11 @@ export class UsersController {
   constructor( private usersService: UsersService) {}
   
   @Get()
-  getUsers(@Query() filterDto: GetUsersFilterDto): Promise<User[]> {
-    return this.usersService.getUsers(filterDto);
+  getUsers(@Body('email') email: string): Promise<User[] | User> {
+    if (email) {
+      return this.usersService.getUserByEmail(email);
+    }
+    return this.usersService.getUsers();
   }
 
   @Get('/:id')
