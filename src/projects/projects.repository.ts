@@ -1,11 +1,10 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, getConnection, getManager, Repository } from 'typeorm';
 
 import { Project } from './project.entity';
 import { ProjectStatus } from './project-status.enum';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
-
-// import { User } from '../auth/user.entity';
+import { User } from 'src/users/user.entity';
 
 @EntityRepository(Project)
 export class ProjectsRepository extends Repository<Project> {
@@ -28,10 +27,14 @@ export class ProjectsRepository extends Repository<Project> {
     return projects;
   }
 
-  async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
+  async createProject(
+    author: User,
+    createProjectDto: CreateProjectDto,
+): Promise<Project> {
     const { title, description } = createProjectDto;
 
     const project = this.create({
+      author,
       title,
       description,
       status: ProjectStatus.OPEN,
