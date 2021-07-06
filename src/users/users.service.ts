@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
 import { UserRole } from './user-role.enum';
 import { UsersRepository } from './users.repository';
-import { AuthCredentialsDto } from 'src/auth/dto/auth-credentials.dto';
+import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
+import { GetUserDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,11 +14,18 @@ export class UsersService {
     private usersRepository: UsersRepository,
   ) {}
     
-  async createUser(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    return this.usersRepository.createUser(authCredentialsDto);
+  async createUser(createUserDto: CreateUserCredentialsDto): Promise<void> {
+    return this.usersRepository.createUser(createUserDto);
   }
 
-  async getUsers(): Promise<User[]> {
+  async getUsers(getUserDto: GetUserDto): Promise<User[] | User> {
+    const { email, login } = getUserDto;
+    if (email) {
+      return this.getUserByEmail(email);
+    }
+    if (login) {
+      return this.getUserByLogin(login);
+    }
     return this.usersRepository.getUsers();
   }
 
@@ -33,6 +41,14 @@ export class UsersService {
     const found = await this.usersRepository.findOne({ email });
     if (!found) {
       throw new NotFoundException(`User with email: ${email} not found`);
+    }
+    return found;
+  }
+
+  async getUserByLogin(login: string): Promise<User> {
+    const found = await this.usersRepository.findOne({ login });
+    if (!found) {
+      throw new NotFoundException(`User with login: ${login} not found`);
     }
     return found;
   }

@@ -4,25 +4,25 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from './user.entity';
 import { UserRole } from './user-role.enum';
-import { AuthCredentialsDto } from '../auth/dto/auth-credentials.dto';
+import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
   
-  async createUser(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { email, password } = authCredentialsDto;
+  async createUser(createUserDto: CreateUserCredentialsDto): Promise<void> {
+    const { email, login, password } = createUserDto;
 
     const salt = await bcrypt.genSalt();
     const passHash = await bcrypt.hash(password, salt);
     const role = UserRole.USER;
-    const user = this.create({ email, passHash, role });
+    const user = this.create({ email, login, passHash, role });
     
     try {
       await this.save(user);
     } catch (error) {
       if (error.code === '23505') {
         // duplicate username
-        throw new ConflictException(`User with emai: ${email} already exists`);
+        throw new ConflictException(`User already exists`);
       } else {
         throw new InternalServerErrorException();
       }

@@ -5,22 +5,23 @@ import {
   Patch,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { GetUserDto } from './dto/get-user.dto';
 
+@UseGuards(AuthGuard())
 @Controller('users')
 export class UsersController {
   constructor( private usersService: UsersService) {}
   
   @Get()
-  getUsers(@Body('email') email: string): Promise<User[] | User> {
-    if (email) {
-      return this.usersService.getUserByEmail(email);
-    }
-    return this.usersService.getUsers();
+  getUsers(@Body() getUserDto: GetUserDto): Promise<User[] | User> {
+    return this.usersService.getUsers(getUserDto);
   }
 
   @Get('/:id')
