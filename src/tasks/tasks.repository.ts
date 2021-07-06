@@ -1,12 +1,14 @@
 import { EntityRepository, Repository } from 'typeorm';
 
+import { User } from 'src/users/user.entity';
 import { Task } from './task.entity';
+import { Comment } from 'src/comments/comment.entity';
+import { Project } from 'src/projects/project.entity';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskPriority } from './task-priority.enum';
-
-// import { User } from '../auth/user.entity';
+import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
@@ -30,10 +32,16 @@ export class TasksRepository extends Repository<Task> {
     return tasks;
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(
+    project: Project,
+    author : User,
+    createTaskDto: CreateTaskDto,
+  ): Promise<Task> {
     const { title, description } = createTaskDto;
-
+    
     const task = this.create({
+      project,
+      author,
       title,
       description,
       status: TaskStatus.OPEN,

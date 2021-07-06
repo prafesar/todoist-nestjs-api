@@ -1,18 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { Project } from 'src/projects/project.entity';
+import { User } from 'src/users/user.entity';
 import { Task } from './task.entity';
+import { Comment } from 'src/comments/comment.entity';
 import { TaskPriority } from './task-priority.enum';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TasksRepository } from './tasks.repository';
+import { CommentsService } from 'src/comments/comments.service';
+import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository,
+    private readonly commentsService: CommentsService,
   ) {}
 
   getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
@@ -27,9 +33,12 @@ export class TasksService {
     return found;
   }
 
-  createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksRepository.createTask(createTaskDto);
-    // TODO: need author ID
+  async createTask(
+    project: Project,
+    author : User,
+    createTaskDto: CreateTaskDto
+  ): Promise<Task> {
+    return this.tasksRepository.createTask(project, author, createTaskDto);
   }
 
   async deleteTask(id: string): Promise<void> {
@@ -57,4 +66,5 @@ export class TasksService {
 
     return task;
   }
+
 }
