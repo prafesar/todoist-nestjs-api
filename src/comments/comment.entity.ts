@@ -3,7 +3,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+
+import { Task } from 'src/tasks/task.entity';
+import { User } from 'src/users/user.entity';
 
 @Entity()
 export class Comment {
@@ -14,16 +18,19 @@ export class Comment {
   @CreateDateColumn()
   createdDate: Date;
 
-  @Column()
-  authorId: string;
-
-  @Column()
-  taskId: string;
+  @ManyToOne((_type) => User, user => user.comments)
+  author: User;
 
   @Column()
   title: string;
 
   @Column()
   description: string;
+  
+  @ManyToOne(
+    (_type) => Task,
+    task => task.comments,
+  )
+  task: Task;
 
 }
