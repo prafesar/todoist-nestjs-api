@@ -23,20 +23,34 @@ export class AuthService {
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<{ accessToken: string }> {
     const { email, login, password } = authCredentialsDto;
+    let userId: string;
     let user: User;
     if (login) {
       user = await this.usersService.getUserByLogin(login);
+      userId = user.id;
     }
     if (email) {
       user = await this.usersService.getUserByEmail(email);
+      userId = user.id;
     }
     
     if (user && (await bcrypt.compare(password, user.passHash))) {
-      const payload: JwtPayload = { email };
-      const accessToken: string = await this.jwtService.sign(payload);
+      const payload: JwtPayload = { userId };
+      const accessToken: string = this.jwtService.sign(payload);
       return { accessToken };
     } else {
       throw new UnauthorizedException('Please check your login credentials');
     }
   }
+
+  // googleLogin(req) {
+  //   if (!req.user) {
+  //     return 'No user from google'
+  //   }
+
+  //   return {
+  //     message: 'User information from google',
+  //     user: req.user
+  //   }
+  // }
 }

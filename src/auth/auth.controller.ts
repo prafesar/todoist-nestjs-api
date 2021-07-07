@@ -2,9 +2,13 @@ import {
   Controller,
   Body,
   Post,
+  UseGuards,
+  Req,
+  Get,
 } from '@nestjs/common';
-import { CreateUserCredentialsDto } from 'src/users/dto/create-user-credentials.dto';
+import { AuthGuard } from '@nestjs/passport';
 
+import { CreateUserCredentialsDto } from 'src/users/dto/create-user-credentials.dto';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 
@@ -24,5 +28,15 @@ export class AuthController {
     return this.authService.signIn(authCredentialsDto);
   }
   
-  // logout
+  // @Get()
+  // @UseGuards(AuthGuard('google'))
+  // async googleLogin(@Req() req) {
+    
+  // }
+
+  // @Get('redirect')
+  // @UseGuards(AuthGuard('google'))
+  // googleAuthRedirect(@Req() req) {
+  //   return this.authService.googleLogin(req)
+  // }
 }
