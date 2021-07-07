@@ -30,7 +30,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy],
-  exports: [PassportModule, JwtStrategy, GoogleStrategy]
+  exports: [PassportModule, AuthService, JwtStrategy, GoogleStrategy]
 })
 
 export class AuthModule {}
