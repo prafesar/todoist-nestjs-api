@@ -13,6 +13,7 @@ import { CommentsService } from './comments.service';
     CommentsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     PassportModule,
+    AuthModule,
   ],
   controllers: [CommentsController],
   providers: [CommentsRepository, CommentsService],

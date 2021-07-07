@@ -5,10 +5,10 @@ import { Comment } from 'src/comments/comment.entity';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { UserRole } from 'src/users/user-role.enum';
-import { Role } from 'src/auth/roles.decorator';
+import { Roles } from 'src/auth/roles.decorator';
 
 @UseGuards(RolesGuard)
-@Role(UserRole.USER)
+@Roles(UserRole.USER)
 @Controller('comments')
 export class CommentsController {
   constructor(
@@ -26,7 +26,7 @@ export class CommentsController {
     return this.commentsService.updateComment(id, updateComment);
   }
 
-  @Role(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN)
   @Delete('/:id')
   deleteComment(@Param('id') id: string): Promise<void> {
     return this.commentsService.deleteCommentById(id);
