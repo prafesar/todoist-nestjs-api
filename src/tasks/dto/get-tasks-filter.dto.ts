@@ -31,4 +31,8 @@ export class GetTasksFilterDto {
   @IsString()
   sort?: sortType;
 
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
 }

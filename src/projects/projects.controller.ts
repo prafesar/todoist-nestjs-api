@@ -19,25 +19,36 @@ import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { GetUser } from 'src/users/get-user.decorator';
 import { Task } from 'src/tasks/task.entity';
 import { User } from 'src/users/user.entity';
-import { AuthGuard } from '@nestjs/passport';
+import { Role } from 'src/auth/roles.decorator';
+import { UserRole } from 'src/users/user-role.enum';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { GetTasksFilterDto } from 'src/tasks/dto/get-tasks-filter.dto';
 
+@UseGuards(RolesGuard)
+@Role(UserRole.USER)
 @Controller('projects')
-@UseGuards(AuthGuard())
 export class ProjectsController {
   constructor(
     private projectsService: ProjectsService,
   ) {}
 
+  // only where current user
   @Get()
   getProjects(@Query() filterDto: GetProjectsFilterDto): Promise<Project[]> {
     return this.projectsService.getProjects(filterDto);
   }
 
+  // only where current user
   @Get('/:id')
-  getProjectById(@Param('id') id: string): Promise<Project> {
+  async getProjectById(@Param('id') id: string): Promise<Project> {
+    // const project: Project = await this.projectsService.getProjectById(id);
+    // const tasks: Task[] = await this.tasksService.getTasks(projectId);
+    // const users: User[] = await this.usersService.getUsers()
+    // return { project, users, tasks };
     return this.projectsService.getProjectById(id);
   }
 
+  @Role(UserRole.ADMIN)
   @Post()
   createProject(
     @Body() createProjectDto: CreateProjectDto,
@@ -56,6 +67,17 @@ export class ProjectsController {
     return this.projectsService.addTaskInProject(projectId, author, createTaskDto);
   }
 
+  // @Get('/:id/tasks')
+  // getTasksByProject(
+  //   @Param('id') projectId: string,
+  //   @Body() getTasksFilterDto: GetTasksFilterDto,
+  //   @GetUser() user: User,
+  // ): Promise<Task[]> {
+  //   // check if project nav curr User
+  //   // get task by  projectId 
+  // }
+
+  @Role(UserRole.ADMIN)
   @Post('/:id/users')
   addUserInProject(
     @Param('id') projectId: string,
@@ -64,11 +86,13 @@ export class ProjectsController {
     return this.projectsService.addUserInProject(projectId, userId);
   }
 
+  @Role(UserRole.ADMIN)
   @Delete('/:id')
   deleteProject(@Param('id') id: string): Promise<void> {
     return this.projectsService.deleteProject(id);
   }
 
+  @Role(UserRole.ADMIN)
   @Patch('/:id/status')
   updateProjectStatus(
     @Param('id') id: string,

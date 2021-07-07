@@ -14,10 +14,17 @@ import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 export class TasksRepository extends Repository<Task> {
 
   async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
-    const { status, priority, search } = filterDto;
+    const {
+      status,
+      priority,
+      search,
+      // projectId,
+      // userId,
+    } = filterDto;
 
     const query = this.createQueryBuilder('task');
-
+    
+    // projectId && query.andWhere ('task.project = :project', { projectId });
     status && query.andWhere('task.status = :status', { status });
     priority && query.andWhere('task.priority = :priority', { priority });
     

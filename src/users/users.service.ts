@@ -6,6 +6,7 @@ import { UserRole } from './user-role.enum';
 import { UsersRepository } from './users.repository';
 import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
 import { GetUserDto } from './dto/get-user.dto';
+import { UserRoleDto } from './dto/user-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -61,9 +62,9 @@ export class UsersService {
     }
   }
 
-  async updateUserRole(id: string, role: UserRole): Promise<User> {
+  async updateUserRole(id: string, userRole: UserRoleDto): Promise<User> {
     const user = await this.getUserById(id);
-    user.role = role;
+    user.role = userRole.role;
     await this.usersRepository.save(user);
     return user;
   } 
