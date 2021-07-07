@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-import { TaskPriority } from './task-priority.enum';
-import { TaskStatus } from './task-status.enum';
+import { TaskPriority } from '../common/enums/task-priority.enum';
+import { TaskStatus } from '../common/enums/task-status.enum';
 import { User } from 'src/users/user.entity';
 import { Project } from 'src/projects/project.entity';
 import { Comment } from 'src/comments/comment.entity';

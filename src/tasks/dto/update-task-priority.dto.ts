@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-import { TaskPriority } from '../task-Priority.enum';
+import { TaskPriority } from '../../common/enums/task-priority.enum';
 
 export class UpdateTaskPriorityDto {
 

@@ -13,9 +13,9 @@ import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UserRoleDto } from './dto/user-role.dto';
 import { GetUserDto } from './dto/get-user.dto';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from './user-role.enum';
-import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from '../common/enums/user-role.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @UseGuards(RolesGuard)
 @Roles(UserRole.ADMIN)

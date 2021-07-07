@@ -9,7 +9,7 @@ import {
   ManyToMany,
 } from 'typeorm';
 
-import { UserRole } from './user-role.enum';
+import { UserRole } from '../common/enums/user-role.enum';
 import { Project } from 'src/projects/project.entity';
 import { Task } from 'src/tasks/task.entity';
 import { Comment } from '../comments/comment.entity';

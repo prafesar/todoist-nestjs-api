@@ -16,12 +16,12 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { GetUser } from 'src/users/get-user.decorator';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Task } from 'src/tasks/task.entity';
 import { User } from 'src/users/user.entity';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/users/user-role.enum';
-import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/user-role.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 import { GetTasksFilterDto } from 'src/tasks/dto/get-tasks-filter.dto';
 
 @UseGuards(RolesGuard)

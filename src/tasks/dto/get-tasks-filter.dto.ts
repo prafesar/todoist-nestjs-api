@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-import { TaskPriority } from '../task-priority.enum';
-import { TaskStatus } from '../task-status.enum';
+import { TaskPriority } from '../../common/enums/task-priority.enum';
+import { TaskStatus } from '../../common/enums/task-status.enum';
 
 type sortType = 'asc' | 'desc';
 

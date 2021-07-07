@@ -19,7 +19,7 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { UpdateTaskPriorityDto } from './dto/update-task-priority.dto';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
-import { GetUser } from 'src/users/get-user.decorator';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { CommentsService } from 'src/comments/comments.service';
 
 @UseGuards(AuthGuard())

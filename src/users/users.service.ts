@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from '../users/user.entity';
-import { UserRole } from './user-role.enum';
+import { UserRole } from '../common/enums/user-role.enum';
 import { UsersRepository } from './users.repository';
 import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
 import { GetUserDto } from './dto/get-user.dto';
