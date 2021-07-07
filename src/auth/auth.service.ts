@@ -5,7 +5,7 @@ import { User } from 'src/users/user.entity';
 
 import { UsersService } from '../users/users.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { CreateUserCredentialsDto } from 'src/users/dto/create-user-credentials.dto';
+import { CreateUserCredentialsDto } from '../users/dto/create-user-credentials.dto';
 import { JwtPayload } from './strategies/jwt-payload.interface';
 
 @Injectable()
