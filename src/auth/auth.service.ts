@@ -22,20 +22,10 @@ export class AuthService {
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<{ accessToken: string }> {
-    const { email, login, password } = authCredentialsDto;
-    let userId: string;
-    let user: User;
-    if (login) {
-      user = await this.usersService.getUserByLogin(login);
-      userId = user.id;
-    }
-    if (email) {
-      user = await this.usersService.getUserByEmail(email);
-      userId = user.id;
-    }
+    const user: User = await this.validateUser(authCredentialsDto)
     
-    if (user && (await bcrypt.compare(password, user.passHash))) {
-      const payload: JwtPayload = { userId };
+    if (user) {
+      const payload: JwtPayload = { userId: user.id };
       const accessToken: string = this.jwtService.sign(payload);
       return { accessToken };
     } else {
@@ -43,6 +33,24 @@ export class AuthService {
     }
   }
 
+  async validateUser(authCredentialsDto: AuthCredentialsDto): Promise<User> {
+    const { email, login, password } = authCredentialsDto;
+    let user: User;
+
+    if (login) {
+      user = await this.usersService.getUserByLogin(login);
+    }
+
+    if (email) {
+      user = await this.usersService.getUserByEmail(email);
+    }
+
+    if (user && (await bcrypt.compare(password, user.passHash))) {
+      return user;
+    } else {
+      throw new UnauthorizedException('Please check your login credentials');
+    }
+  }
   // googleLogin(req) {
   //   if (!req.user) {
   //     return 'No user from google'

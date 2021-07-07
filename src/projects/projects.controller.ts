@@ -23,8 +23,9 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { GetTasksFilterDto } from 'src/tasks/dto/get-tasks-filter.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.USER)
 @Controller('projects')
 export class ProjectsController {
