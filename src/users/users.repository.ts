@@ -14,7 +14,8 @@ export class UsersRepository extends Repository<User> {
 
     const salt = await bcrypt.genSalt();
     const passHash = await bcrypt.hash(password, salt);
-    const role = UserRole.USER;
+    const role = await this.isFirstUser() ? UserRole.ADMIN : UserRole.USER;
+    
     const user = this.create({ email, login, passHash, role });
     
     try {
@@ -29,7 +30,16 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
+  async isFirstUser(): Promise<boolean> {
+    const [ , count] = await this.findAndCount({
+      where: [
+        { role: UserRole.ADMIN },
+      ]
+    })
+    return !Boolean(count)
+  }
+
   async getUsers(): Promise<User[]> {
-    return await this.createQueryBuilder("user").getMany();
+    return await this.find()
   }
 }
