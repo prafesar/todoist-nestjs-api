@@ -1,10 +1,8 @@
-import { Exclude } from 'class-transformer';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  Unique,
   OneToMany,
   ManyToMany,
 } from 'typeorm';
@@ -15,7 +13,6 @@ import { Task } from 'src/tasks/task.entity';
 import { Comment } from '../comments/comment.entity';
 
 @Entity()
-@Unique(['email', 'login'])
 export class User {
 
   @PrimaryGeneratedColumn('uuid')
@@ -24,10 +21,10 @@ export class User {
   @CreateDateColumn()
   createdDate: Date;
   
-  @Column() 
+  @Column(({ unique: true })) 
   email: string;
 
-  @Column() 
+  @Column(({ unique: true })) 
   login: string;
 
   @Column()
