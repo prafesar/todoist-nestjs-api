@@ -7,10 +7,6 @@ type sortType = 'asc' | 'desc';
 export class GetProjectsFilterDto {
 
   @IsOptional()
-  @IsString()
-  userId?: string; // search all projects by userId
-
-  @IsOptional()
   @IsEnum(ProjectStatus)
   status?: ProjectStatus;
 

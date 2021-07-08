@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -26,7 +28,7 @@ import { GetTasksFilterDto } from 'src/tasks/dto/get-tasks-filter.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.USER)
+@Roles(UserRole.ADMIN)
 @Controller('projects')
 export class ProjectsController {
   constructor(
@@ -35,50 +37,53 @@ export class ProjectsController {
 
   // only where current user
   @Get()
+  @Roles(UserRole.USER)
   getProjects(@Query() filterDto: GetProjectsFilterDto): Promise<Project[]> {
     return this.projectsService.getProjects(filterDto);
   }
 
-  // only where current user
+  // only if current user in project
   @Get('/:id')
-  async getProjectById(@Param('id') id: string): Promise<Project> {
-    // const project: Project = await this.projectsService.getProjectById(id);
-    // const tasks: Task[] = await this.tasksService.getTasks(projectId);
-    // const users: User[] = await this.usersService.getUsers()
-    // return { project, users, tasks };
-    return this.projectsService.getProjectById(id);
+  @Roles(UserRole.USER)
+  async getProjectById( // with tasks
+    @Param('id') id: string,
+    @GetUser() currUser: User,
+  ): Promise<Project> {
+    const project: Project = await this.projectsService.getProjectById(id)
+    const { users } = project;
+
+    const userIsMissing = !users.some((user) => user.id === currUser.id)
+    if (userIsMissing) {
+      throw new HttpException('User is not in this project', HttpStatus.FORBIDDEN)
+    }
+    return project;
   }
 
-  @Roles(UserRole.ADMIN)
   @Post()
   createProject(
     @Body() createProjectDto: CreateProjectDto,
     @GetUser() author: User,
   ): Promise<Project> {
-    console.log('controller project, author: ', author);
     return this.projectsService.createProject(author, createProjectDto);
   }
 
+  @Roles(UserRole.USER)
   @Post('/:id/tasks')
-  addTaskInProject(
-    @Param('id') projectId: string,
+  async addTaskInProject(
+    @Param('id') id: string,
     @Body() createTaskDto: CreateTaskDto,
-    @GetUser() author: User,
+    @GetUser() currUser: User,
   ): Promise<Task> {
-    return this.projectsService.addTaskInProject(projectId, author, createTaskDto);
+    const project: Project = await this.projectsService.getProjectById(id)
+    const { users } = project;
+    // only if current user in project
+    const userIsMissing = !users.some((user) => user.id === currUser.id)
+    if (userIsMissing) {
+      throw new HttpException('User is not in this project', HttpStatus.FORBIDDEN)
+    }
+    return this.projectsService.addTaskInProject(id, currUser, createTaskDto);
   }
 
-  // @Get('/:id/tasks')
-  // getTasksByProject(
-  //   @Param('id') projectId: string,
-  //   @Body() getTasksFilterDto: GetTasksFilterDto,
-  //   @GetUser() user: User,
-  // ): Promise<Task[]> {
-  //   // check if project nav curr User
-  //   // get task by  projectId 
-  // }
-
-  @Roles(UserRole.ADMIN)
   @Post('/:id/users')
   addUserInProject(
     @Param('id') projectId: string,
@@ -87,13 +92,11 @@ export class ProjectsController {
     return this.projectsService.addUserInProject(projectId, userId);
   }
 
-  @Roles(UserRole.ADMIN)
   @Delete('/:id')
   deleteProject(@Param('id') id: string): Promise<void> {
     return this.projectsService.deleteProject(id);
   }
 
-  @Roles(UserRole.ADMIN)
   @Patch('/:id/status')
   updateProjectStatus(
     @Param('id') id: string,

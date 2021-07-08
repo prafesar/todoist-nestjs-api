@@ -9,11 +9,14 @@ import { User } from 'src/users/user.entity';
 @EntityRepository(Project)
 export class ProjectsRepository extends Repository<Project> {
 
-  async getProjects(filterDto: GetProjectsFilterDto): Promise<Project[]> {
+  async getProjects(
+    filterDto: GetProjectsFilterDto
+  ): Promise<Project[]> {
+    
     const { status, search } = filterDto;
 
     const query = this.createQueryBuilder('project');
-
+    
     status && query.andWhere('project.status = :status', { status });
     
     if (search) {
@@ -22,7 +25,7 @@ export class ProjectsRepository extends Repository<Project> {
         { search: `%${search}%` },
       );
     }
-    // implement filter projects by userId --> table: user-projects
+
     const projects = await query.getMany();
     return projects;
   }

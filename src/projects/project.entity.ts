@@ -33,10 +33,9 @@ export class Project {
   status: ProjectStatus;
 
   @ManyToOne((_type) => User, { eager: true })
-  // @Exclude({ toPlainOnly: true })
   author: User;
   
-  @OneToMany((_type) => Task, (task) => task.project, { eager: false })
+  @OneToMany((_type) => Task, (task) => task.project, { eager: true })
   @Exclude({ toPlainOnly: true })
   tasks: Task[];
 
@@ -49,6 +48,7 @@ export class Project {
       eager: true,
     }
   )
+  @Exclude({ toPlainOnly: true })
   users: User[];
 
 }
