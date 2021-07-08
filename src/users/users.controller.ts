@@ -16,8 +16,9 @@ import { GetUserDto } from './dto/get-user.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 @Controller('users')
 export class UsersController {
@@ -25,8 +26,14 @@ export class UsersController {
   
   @Roles(UserRole.USER)
   @Get()
-  getUsers(@Body() getUserDto: GetUserDto): Promise<User[] | User> {
-    return this.usersService.getUsers(getUserDto);
+  getAllUsers(): Promise<User[]> {
+    return this.usersService.getAllUsers();
+  }
+
+  @Roles(UserRole.USER)
+  @Get('/find')
+  getUser(@Body() getUserDto: GetUserDto): Promise<User> {
+    return this.usersService.getUser(getUserDto);
   }
 
   @Roles(UserRole.USER)
