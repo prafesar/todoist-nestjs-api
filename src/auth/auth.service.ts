@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtsService } from '../jwts/jwts.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/user.entity';
 
@@ -12,7 +12,7 @@ import { JwtPayload } from './strategies/jwt-payload.interface';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService,
+    private jwtsService: JwtsService,
   ) {}
 
   async signUp(createUserDto: CreateUserCredentialsDto) {
@@ -26,7 +26,7 @@ export class AuthService {
     
     if (user) {
       const payload: JwtPayload = { userId: user.id };
-      const accessToken: string = this.jwtService.sign(payload);
+      const accessToken: string = this.jwtsService.sign(payload);
       return { accessToken };
     } else {
       throw new UnauthorizedException('Please check your login credentials');
