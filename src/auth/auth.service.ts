@@ -25,9 +25,7 @@ export class AuthService {
     const user: User = await this.validateUser(authCredentialsDto)
     
     if (user) {
-      const payload: JwtPayload = { userId: user.id };
-      const accessToken: string = this.jwtsService.sign(payload);
-      return { accessToken };
+      return this.sendToken(user.id)
     } else {
       throw new UnauthorizedException('Please check your login credentials');
     }
@@ -51,14 +49,21 @@ export class AuthService {
       throw new UnauthorizedException('Please check your login credentials');
     }
   }
-  // googleLogin(req) {
-  //   if (!req.user) {
-  //     return 'No user from google'
-  //   }
 
-  //   return {
-  //     message: 'User information from google',
-  //     user: req.user
-  //   }
-  // }
+  sendToken(userId: string): { accessToken: string } {
+    const payload: JwtPayload = { userId };
+    const accessToken: string = this.jwtsService.sign(payload);
+    return { accessToken };
+  }
+
+  googleLogin(req) {
+    if (!req.user) {
+      return 'No user from google'
+    }
+
+    return {
+      message: 'User information from google',
+      user: req.user
+    }
+  }
 }

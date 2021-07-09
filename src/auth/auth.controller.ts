@@ -28,15 +28,13 @@ export class AuthController {
     return this.authService.signIn(authCredentialsDto);
   }
   
-  // @Get()
-  // @UseGuards(AuthGuard('google'))
-  // async googleLogin(@Req() req) {
-    
-  // }
+  @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {}
 
-  // @Get('redirect')
-  // @UseGuards(AuthGuard('google'))
-  // googleAuthRedirect(@Req() req) {
-  //   return this.authService.googleLogin(req)
-  // }
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req) {
+    return this.authService.googleLogin(req)
+  }
 }

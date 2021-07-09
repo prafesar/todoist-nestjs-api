@@ -27,7 +27,7 @@ import { JwtsModule } from 'src/jwts/jwts.module';
     GoogleStrategy,
     LocalStrategy,
   ],
-  exports: [AuthService]
+  exports: [AuthService, PassportModule]
 })
 
 export class AuthModule {}
