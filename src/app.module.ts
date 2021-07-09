@@ -10,6 +10,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CommentsModule } from './comments/comments.module';
 import { JwtsModule } from './jwts/jwts.module';
+import { NotifyModule } from './notify/notify.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { JwtsModule } from './jwts/jwts.module';
     ProjectsModule,
     TasksModule,
     CommentsModule,
-    JwtsModule
+    JwtsModule,
+    NotifyModule
   ],
   controllers: [],
   providers: [],
