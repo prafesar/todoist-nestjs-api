@@ -8,6 +8,8 @@ import { CommentsModule } from 'src/comments/comments.module';
 import { Comment } from 'src/comments/comment.entity';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
+import { JwtsModule } from 'src/jwts/jwts.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { AuthModule } from 'src/auth/auth.module';
     CommentsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     AuthModule,
+    UsersModule,
+    JwtsModule,
   ],
   controllers: [TasksController],
   providers: [TasksService],

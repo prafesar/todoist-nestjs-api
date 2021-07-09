@@ -16,6 +16,8 @@ export class CommentsService {
   async createComment(
     createCommentDto: CreateCommentDto
   ): Promise<Comment> {
+
+    // if mentioned, send reminder
     return this.commentsRepository.create({
       ...createCommentDto,
     })

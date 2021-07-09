@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
 import { Task } from './task.entity';
 import { User } from 'src/users/user.entity';
@@ -21,8 +20,13 @@ import { UpdateTaskPriorityDto } from './dto/update-task-priority.dto';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { CommentsService } from 'src/comments/comments.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UserRole } from 'src/common/enums/user-role.enum';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.USER)
 @Controller('tasks')
 export class TasksController {
   constructor(
