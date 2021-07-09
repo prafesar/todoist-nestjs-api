@@ -21,5 +21,6 @@ config();
     })
   ],
   providers: [NotifyService],
+  exports: [NotifyService]
 })
 export class NotifyModule {}
