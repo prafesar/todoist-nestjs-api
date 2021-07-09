@@ -5,22 +5,38 @@ import { Comment } from 'src/comments/comment.entity';
 import { CommentsRepository } from 'src/comments/comments.repository';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
+import { NotifyService } from 'src/notify/notify.service';
+import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(CommentsRepository)
     private readonly commentsRepository: CommentsRepository,
+    private readonly usersService: UsersService,
+    private readonly notifyService: NotifyService,
   ){}
 
   async createComment(
-    createCommentDto: CreateCommentDto
+    createCommentDto: CreateCommentDto,
   ): Promise<Comment> {
 
-    // if mentioned, send reminder
-    return this.commentsRepository.create({
+    const comment = this.commentsRepository.create({
       ...createCommentDto,
     })
+    // if mentioned, send reminder
+    const { description } = comment;
+    const mentionedUsers: Promise<User>[] = description
+      .split(' ')
+      .filter(word => word[0] === '@')
+      .map(item => this.usersService.getUserByLogin(item.substring(1)))
+
+    Promise.all(mentionedUsers)
+      .then(users => users.forEach(({ email }) => {
+        this.notifyService.sendLetter({ to: email, subject: '' , text: description});
+      }))
+    return comment;
   }
 
   async getCommentById(id: string): Promise<Comment> {
