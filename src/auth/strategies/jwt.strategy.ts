@@ -11,11 +11,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private usersService: UsersService) {
     super({
       secretOrKey: process.env.JWT_SECRET,
+      // secretOrKey: configService.get('JWT_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
 
   async validate(token: TokenPayload): Promise<User> {
+    // as alternative, can simple send token
     const { userId } = token;
     const user: User = await this.usersService.getUserById(userId);
 
