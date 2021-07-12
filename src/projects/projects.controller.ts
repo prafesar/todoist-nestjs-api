@@ -23,9 +23,9 @@ import { Task } from 'src/tasks/task.entity';
 import { User } from 'src/users/user.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { GetTasksFilterDto } from 'src/tasks/dto/get-tasks-filter.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)

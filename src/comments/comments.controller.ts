@@ -3,7 +3,7 @@ import { Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common
 import { CommentsService } from './comments.service';
 import { Comment } from 'src/comments/comment.entity';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
