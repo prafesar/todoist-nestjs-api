@@ -6,7 +6,8 @@ import { User } from 'src/users/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { CreateUserCredentialsDto } from '../users/dto/create-user-credentials.dto';
-import { JwtPayload } from './strategies/jwt-payload.interface';
+import { TokenPayload } from './token-payload.interface';
+import { USER_NOT_EXIST, WRONG_PASSWORD } from './config/constants';
 
 @Injectable()
 export class AuthService {
@@ -20,38 +21,38 @@ export class AuthService {
   }
 
   async signIn(
-    authCredentialsDto: AuthCredentialsDto,
+    dto: AuthCredentialsDto,
   ): Promise<{ accessToken: string }> {
-    const user: User = await this.validateUser(authCredentialsDto)
+    const user: User = await this.getAuthenticatedUser(dto);
+    return this.getToken(user.id);
+  }
+
+  async getAuthenticatedUser({ email, password }: AuthCredentialsDto): Promise<User> {
+    const  user: User = await this.usersService.getUserByEmail(email);
+
+    if (!user) {
+      throw new UnauthorizedException(USER_NOT_EXIST);
+    }
     
-    if (user) {
-      return this.sendToken(user.id)
-    } else {
-      throw new UnauthorizedException('Please check your login credentials');
-    }
+    this.verifyPassword(password, user.passHash);
+    user.passHash = undefined;
+
+    return user;
   }
 
-  async validateUser(authCredentialsDto: AuthCredentialsDto): Promise<User> {
-    const { email, login, password } = authCredentialsDto;
-    let user: User;
-
-    if (login) {
-      user = await this.usersService.getUserByLogin(login);
+  async verifyPassword(plainTextPassword: string, hashedPassword: string): Promise<boolean> {
+    const isPasswordMatching: boolean = await bcrypt.compare(
+      plainTextPassword,
+      hashedPassword
+    );
+    if (!isPasswordMatching) {
+      throw new UnauthorizedException(WRONG_PASSWORD);
     }
-
-    if (email) {
-      user = await this.usersService.getUserByEmail(email);
-    }
-
-    if (user && (await bcrypt.compare(password, user.passHash))) {
-      return user;
-    } else {
-      throw new UnauthorizedException('Please check your login credentials');
-    }
+    return true; 
   }
 
-  sendToken(userId: string): { accessToken: string } {
-    const payload: JwtPayload = { userId };
+  getToken(userId: string): { accessToken: string } {
+    const payload: TokenPayload = { userId };
     const accessToken: string = this.jwtsService.sign(payload);
     return { accessToken };
   }
