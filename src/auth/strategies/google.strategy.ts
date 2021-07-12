@@ -37,18 +37,18 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     if (!profile) {
       done(new BadRequestException(), null);
     }
-    
-    // Get google account information
     const { emails } = profile
-    const email = emails[0].value;
-    const user = await this.usersService.getUserByEmail(email);
-    
-    if (!user) {
-      done(new UnauthorizedException(USER_NOT_EXIST), null);
+    const user = {
+      email: emails[0].value,
+      accessToken,
     }
+    // const user = await this.usersService.getUserByEmail(email);
     
-    this.authService.getToken(user.id);
-    // console.log('strategy: get user: ', user);
-    done(undefined, user);
+    // if (!user) {
+    //   done(new UnauthorizedException(USER_NOT_EXIST), null);
+    // }
+    
+    // this.authService.getToken(user.id);
+    done(null, user);
   }
 }
