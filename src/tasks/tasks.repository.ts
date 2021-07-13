@@ -1,6 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
 
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { Task } from './task.entity';
 import { Comment } from 'src/comments/comment.entity';
 import { Project } from 'src/projects/project.entity';
@@ -41,7 +41,7 @@ export class TasksRepository extends Repository<Task> {
 
   async createTask(
     project: Project,
-    author : User,
+    author : UserEntity,
     createTaskDto: CreateTaskDto,
   ): Promise<Task> {
     const { title, description } = createTaskDto;

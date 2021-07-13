@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Project } from './project.entity';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { ProjectsRepository } from './projects.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -34,7 +34,7 @@ export class ProjectsService {
   }
 
   createProject(
-    author: User,
+    author: UserEntity,
     createProjectDto: CreateProjectDto,
   ): Promise<Project> {
     return this.projectsRepository.createProject(author, createProjectDto);
@@ -42,7 +42,7 @@ export class ProjectsService {
 
   async addTaskInProject(
     projectId: string,
-    user: User,
+    user: UserEntity,
     createTaskDto: CreateTaskDto,
   ): Promise<Task> {
     const project = await this.getProjectById(projectId);
@@ -70,14 +70,14 @@ export class ProjectsService {
   }
 
   async addUserInProject(id: string, userId: string): Promise<Project> {
-    const newUser: User = await this.usersService.getUserById(userId);
+    const newUser: UserEntity = await this.usersService.getUserById(userId);
     const project: Project = await this.getProjectById(id);
     const userAlreadyInProject: boolean = project.users.findIndex(user => user.id === userId) >= 0;
     if (userAlreadyInProject) {
       console.log((`User #${userId} already in project`));
       return;
     }
-    const users: User[] = [...project.users, newUser];
+    const users: UserEntity[] = [...project.users, newUser];
     const updatedProject = await this.projectsRepository.preload({
       id,
       users,

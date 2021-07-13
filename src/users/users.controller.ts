@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 // import { AuthGuard } from '@nestjs/passport';
 
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 import { UsersService } from './users.service';
 import { UserRoleDto } from './dto/user-role.dto';
 import { GetUserDto } from './dto/get-user.dto';
@@ -26,19 +26,19 @@ export class UsersController {
   
   @Roles(UserRole.USER)
   @Get()
-  getAllUsers(): Promise<User[]> {
+  getAllUsers(): Promise<UserEntity[]> {
     return this.usersService.getAllUsers();
   }
 
   @Roles(UserRole.USER)
   @Get('/find')
-  getUser(@Body() getUserDto: GetUserDto): Promise<User> {
+  getUser(@Body() getUserDto: GetUserDto): Promise<UserEntity> {
     return this.usersService.getUser(getUserDto);
   }
 
   @Roles(UserRole.USER)
   @Get('/:id')
-  getUserById(@Param('id') id: string): Promise<User> {
+  getUserById(@Param('id') id: string): Promise<UserEntity> {
     return this.usersService.getUserById(id);
   }
   
@@ -51,7 +51,7 @@ export class UsersController {
   async updateUserRole(
     @Param('id') id: string,
     @Body() userRoleDto: UserRoleDto,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     return this.usersService.updateUserRole(id, userRoleDto);
   }
   

@@ -5,16 +5,17 @@ import {
   CreateDateColumn,
   OneToMany,
   ManyToMany,
+  BeforeInsert,
 } from 'typeorm';
+import { hash } from 'bcrypt';
 
 import { UserRole } from '../common/enums/user-role.enum';
 import { Project } from 'src/projects/project.entity';
 import { Task } from 'src/tasks/task.entity';
 import { Comment } from '../comments/comment.entity';
-import { Exclude } from 'class-transformer';
 
-@Entity()
-export class User {
+@Entity({name: 'users'})
+export class UserEntity {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,9 +29,8 @@ export class User {
   @Column(({ unique: true })) 
   login: string;
 
-  @Column()
-  @Exclude({ toPlainOnly: true })
-  passHash: string;
+  @Column({ select: false })
+  password: string;
 
   @Column()
   role: UserRole;
@@ -46,5 +46,10 @@ export class User {
     project => project.users,
   )
   projects: Project[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await hash(this.password, 10);
+  }
 
 }

@@ -2,21 +2,16 @@ import { ConflictException, InternalServerErrorException } from '@nestjs/common'
 import { EntityRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 import { UserRole } from '../common/enums/user-role.enum';
-import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
-@EntityRepository(User)
-export class UsersRepository extends Repository<User> {
+@EntityRepository(UserEntity)
+export class UsersRepository extends Repository<UserEntity> {
   
-  async createUser(createUserDto: CreateUserCredentialsDto): Promise<void> {
-    const { email, login, password } = createUserDto;
-
-    const salt = await bcrypt.genSalt();
-    const passHash = await bcrypt.hash(password, salt);
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const role = await this.isFirstUser() ? UserRole.ADMIN : UserRole.USER;
-    
-    const user = this.create({ email, login, passHash, role });
+    const user = this.create({ ...createUserDto, role });
     
     try {
       await this.save(user);
@@ -28,6 +23,7 @@ export class UsersRepository extends Repository<User> {
         throw new InternalServerErrorException();
       }
     }
+    return user;
   }
 
   async isFirstUser(): Promise<boolean> {
@@ -39,7 +35,7 @@ export class UsersRepository extends Repository<User> {
     return !Boolean(count)
   }
 
-  async getUsers(): Promise<User[]> {
+  async getUsers(): Promise<UserEntity[]> {
     return await this.find()
   }
 }

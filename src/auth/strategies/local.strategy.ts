@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AuthService } from '../auth.service';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -15,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     });
   }
 
-  async validate(email: string, password: string): Promise<User> {
+  async validate(email: string, password: string): Promise<UserEntity> {
     const dto: AuthCredentialsDto = { email, password };
     const user = await this.authService.getAuthenticatedUser(dto);
     return user;

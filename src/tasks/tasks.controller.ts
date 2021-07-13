@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { Task } from './task.entity';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { Comment } from 'src/comments/comment.entity';
 import { TasksService } from './tasks.service';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -54,7 +54,7 @@ export class TasksController {
     @Param('id') taskId: string,
     @Body('title') title: string,
     @Body('description') description: string,
-    @GetUser() author: User,
+    @GetUser() author: UserEntity,
   ): Promise<Comment> {
     const task = await this.tasksService.getTaskById(taskId);
     const createCommentDto: CreateCommentDto = {

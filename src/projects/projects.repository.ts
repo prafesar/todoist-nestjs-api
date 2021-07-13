@@ -4,7 +4,7 @@ import { Project } from './project.entity';
 import { ProjectStatus } from './project-status.enum';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 
 @EntityRepository(Project)
 export class ProjectsRepository extends Repository<Project> {
@@ -31,7 +31,7 @@ export class ProjectsRepository extends Repository<Project> {
   }
 
   async createProject(
-    author: User,
+    author: UserEntity,
     createProjectDto: CreateProjectDto,
 ): Promise<Project> {
     const { title, description } = createProjectDto;

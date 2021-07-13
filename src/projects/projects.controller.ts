@@ -20,7 +20,7 @@ import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Task } from 'src/tasks/task.entity';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -47,7 +47,7 @@ export class ProjectsController {
   @Roles(UserRole.USER)
   async getProjectById( // with tasks
     @Param('id') id: string,
-    @GetUser() currUser: User,
+    @GetUser() currUser: UserEntity,
   ): Promise<Project> {
     const project: Project = await this.projectsService.getProjectById(id)
     const { users } = project;
@@ -62,7 +62,7 @@ export class ProjectsController {
   @Post()
   createProject(
     @Body() createProjectDto: CreateProjectDto,
-    @GetUser() author: User,
+    @GetUser() author: UserEntity,
   ): Promise<Project> {
     return this.projectsService.createProject(author, createProjectDto);
   }
@@ -72,7 +72,7 @@ export class ProjectsController {
   async addTaskInProject(
     @Param('id') id: string,
     @Body() createTaskDto: CreateTaskDto,
-    @GetUser() currUser: User,
+    @GetUser() currUser: UserEntity,
   ): Promise<Task> {
     const project: Project = await this.projectsService.getProjectById(id)
     const { users } = project;

@@ -10,7 +10,7 @@ import { Exclude } from 'class-transformer';
 
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { TaskStatus } from '../common/enums/task-status.enum';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { Project } from 'src/projects/project.entity';
 import { Comment } from 'src/comments/comment.entity';
 
@@ -35,9 +35,9 @@ export class Task {
   @Column()
   priority: TaskPriority;
 
-  @ManyToOne((_type) => User, (user) => user.tasks, { eager: false })
+  @ManyToOne((_type) => UserEntity, (user) => user.tasks, { eager: false })
   @Exclude({ toPlainOnly: true })
-  author: User;
+  author: UserEntity;
 
   @ManyToOne((_type) => Project, (project) => project.tasks, { eager: false })
   project: Project;

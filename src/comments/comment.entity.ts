@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 import { Task } from 'src/tasks/task.entity';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 
 @Entity()
 export class Comment {
@@ -18,8 +18,8 @@ export class Comment {
   @CreateDateColumn()
   createdDate: Date;
 
-  @ManyToOne((_type) => User, user => user.comments)
-  author: User;
+  @ManyToOne((_type) => UserEntity, user => user.comments)
+  author: UserEntity;
 
   @Column()
   title: string;

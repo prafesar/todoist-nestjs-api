@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Project } from 'src/projects/project.entity';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { Task } from './task.entity';
 import { Comment } from 'src/comments/comment.entity';
 import { TaskPriority } from '../common/enums/task-priority.enum';
@@ -35,7 +35,7 @@ export class TasksService {
 
   async createTask(
     project: Project,
-    author : User,
+    author : UserEntity,
     createTaskDto: CreateTaskDto
   ): Promise<Task> {
     return this.tasksRepository.createTask(project, author, createTaskDto);

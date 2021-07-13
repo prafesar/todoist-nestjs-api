@@ -1,47 +1,55 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtsService } from '../jwts/jwts.service';
-import * as bcrypt from 'bcrypt';
-import { User } from 'src/users/user.entity';
+import { hash, compare } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
 
+import { JwtsService } from '../jwts/jwts.service';
+import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { CreateUserCredentialsDto } from '../users/dto/create-user-credentials.dto';
-import { TokenPayload } from './token-payload.interface';
-import { USER_NOT_EXIST, WRONG_PASSWORD } from './config/constants';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { USER_NOT_EXIST, WRONG_PASSWORD } from './constants';
+import { ConfigService } from '@nestjs/config';
+import { UserResponseInterface } from 'src/users/types/userResponse.interface';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UsersRepository } from 'src/users/users.repository';
+import { RolesGuard } from './guards/roles.guard';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtsService: JwtsService,
+    private readonly usersService: UsersService,
+    private readonly config: ConfigService,
+    private readonly jwtsService: JwtsService,
   ) {}
 
-  async signUp(createUserDto: CreateUserCredentialsDto) {
-    return this.usersService.createUser(createUserDto);
+  async register(createUserDto: CreateUserDto): Promise<UserResponseInterface> {
+    const user: UserEntity = await this.usersService.createUser(createUserDto);
+    return this.buildUserResponse(user, 'local', '')
   }
 
-  async signIn(
+  async login(
     dto: AuthCredentialsDto,
-  ): Promise<{ accessToken: string }> {
-    const user: User = await this.getAuthenticatedUser(dto);
-    return this.getToken(user.id);
+  ): Promise<UserResponseInterface> {
+    const user: UserEntity = await this.getAuthenticatedUser(dto);
+    const token = this.generateJwt(user);
+    return this.buildUserResponse(user, 'jwt', token);
   }
 
-  async getAuthenticatedUser({ email, password }: AuthCredentialsDto): Promise<User> {
-    const  user: User = await this.usersService.getUserByEmail(email);
+  async getAuthenticatedUser({ email, password }: AuthCredentialsDto): Promise<UserEntity> {
+    const user = await this.usersService.getUserByEmail(email);
 
     if (!user) {
       throw new UnauthorizedException(USER_NOT_EXIST);
     }
     
-    this.verifyPassword(password, user.passHash);
-    user.passHash = undefined;
-
+    this.verifyPassword(password, user.password);
+    delete user.password;
     return user;
   }
 
   async verifyPassword(plainTextPassword: string, hashedPassword: string): Promise<boolean> {
-    const isPasswordMatching: boolean = await bcrypt.compare(
+    const isPasswordMatching: boolean = await compare(
       plainTextPassword,
       hashedPassword
     );
@@ -51,10 +59,26 @@ export class AuthService {
     return true; 
   }
 
-  getToken(userId: string): { accessToken: string } {
-    const payload: TokenPayload = { userId };
-    const accessToken: string = this.jwtsService.sign(payload);
-    return { accessToken };
+  generateJwt(user: UserEntity): string {
+    return sign(
+      {
+        id: user.id,
+        username: user.login,
+        email: user.email,
+        role: user.role,
+      },
+      this.config.get('JWT_SECRET'),
+    );
+  }
+
+  buildUserResponse(user: UserEntity, strategy: string, token: string): UserResponseInterface {
+    return {
+      user: {
+        ...user,
+        token,
+        strategy,
+      },
+    };
   }
 
   googleLogin(req) {

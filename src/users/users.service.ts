@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { User } from '../users/user.entity';
+import { UserEntity } from '../users/user.entity';
 import { UsersRepository } from './users.repository';
-import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { UserRoleDto } from './dto/user-role.dto';
 
@@ -14,11 +14,11 @@ export class UsersService {
     private usersRepository: UsersRepository,
   ) {}
     
-  async createUser(createUserDto: CreateUserCredentialsDto): Promise<void> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     return this.usersRepository.createUser(createUserDto);
   }
 
-  async getUser(getUserDto: GetUserDto): Promise<User> {
+  async getUser(getUserDto: GetUserDto): Promise<UserEntity> {
     const { email, login } = getUserDto;
     if (email) {
       return this.getUserByEmail(email);
@@ -28,11 +28,11 @@ export class UsersService {
     }
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<UserEntity[]> {
     return this.usersRepository.find();
   }
 
-  async getUserById(id: string): Promise<User> {
+  async getUserById(id: string): Promise<UserEntity> {
     const found = await this.usersRepository.findOne(id);
     if (!found) {
       throw new NotFoundException(`User with ID: ${id} not found`);
@@ -40,15 +40,18 @@ export class UsersService {
     return found;
   }
 
-  async getUserByEmail(email: string): Promise<User> {
-    const found = await this.usersRepository.findOne({ email });
+  async getUserByEmail(email: string): Promise<UserEntity> {
+    const found = await this.usersRepository.findOne(
+      { email },
+      { select: ['id', 'login', 'email', 'password'] },
+    );
     if (!found) {
       throw new NotFoundException(`User with email: ${email} not found`);
     }
     return found;
   }
 
-  async getUserByLogin(login: string): Promise<User> {
+  async getUserByLogin(login: string): Promise<UserEntity> {
     const found = await this.usersRepository.findOne({ login });
     if (!found) {
       throw new NotFoundException(`User with login: ${login} not found`);
@@ -64,7 +67,7 @@ export class UsersService {
     }
   }
 
-  async updateUserRole(id: string, userRole: UserRoleDto): Promise<User> {
+  async updateUserRole(id: string, userRole: UserRoleDto): Promise<UserEntity> {
     const user = await this.getUserById(id);
     user.role = userRole.role;
     await this.usersRepository.save(user);

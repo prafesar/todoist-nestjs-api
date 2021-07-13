@@ -12,7 +12,7 @@ import { Exclude } from 'class-transformer';
 
 import { ProjectStatus } from './project-status.enum';
 import { Task } from 'src/tasks/task.entity';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 
 @Entity()
 export class Project {
@@ -32,8 +32,8 @@ export class Project {
   @Column()
   status: ProjectStatus;
 
-  @ManyToOne((_type) => User, { eager: true })
-  author: User;
+  @ManyToOne((_type) => UserEntity, { eager: true })
+  author: UserEntity;
   
   @OneToMany((_type) => Task, (task) => task.project, { eager: true })
   @Exclude({ toPlainOnly: true })
@@ -41,7 +41,7 @@ export class Project {
 
   @JoinTable()
   @ManyToMany(
-    (_type) => User,
+    (_type) => UserEntity,
     user => user.projects,
     {
       cascade: true,
@@ -49,6 +49,6 @@ export class Project {
     }
   )
   @Exclude({ toPlainOnly: true })
-  users: User[];
+  users: UserEntity[];
 
 }

@@ -6,9 +6,9 @@ import {
   Req,
   Get,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
-import { CreateUserCredentialsDto } from 'src/users/dto/create-user-credentials.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UserResponseInterface } from 'src/users/types/userResponse.interface';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
@@ -19,20 +19,19 @@ export class AuthController {
   constructor(private authService: AuthService) {}
   
   @Post('/register')
-  register(@Body() createUserDto: CreateUserCredentialsDto): Promise<void> {
-    return this.authService.signUp(createUserDto);
+  async register(@Body('user') createUserDto: CreateUserDto): Promise<UserResponseInterface> {
+    return await this.authService.register(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@Body() dto: AuthCredentialsDto): Promise<{ accessToken: string }> {
-    return this.authService.signIn(dto);
+  login(@Body() dto: AuthCredentialsDto): Promise<UserResponseInterface> {
+    return this.authService.login(dto);
   }
   
   @Get('/google/login')
   @UseGuards(GoogleAuthGuard)
   async googleAuth(@Req() req) {
-    console.log()
   }
 
   @Get('/google/redirect')

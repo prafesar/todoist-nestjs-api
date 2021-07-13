@@ -6,7 +6,7 @@ import { CommentsRepository } from 'src/comments/comments.repository';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { NotifyService } from 'src/notify/notify.service';
-import { User } from 'src/users/user.entity';
+import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class CommentsService {
     })
     // if mentioned, send reminder
     const { description } = comment;
-    const mentionedUsers: Promise<User>[] = description
+    const mentionedUsers: Promise<UserEntity>[] = description
       .split(' ')
       .filter(word => word[0] === '@')
       .map(item => this.usersService.getUserByLogin(item.substring(1)))
