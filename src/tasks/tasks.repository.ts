@@ -1,19 +1,19 @@
 import { EntityRepository, Repository } from 'typeorm';
 
 import { UserEntity } from 'src/users/user.entity';
-import { Task } from './task.entity';
-import { Comment } from 'src/comments/comment.entity';
-import { Project } from 'src/projects/project.entity';
+import { TaskEntity } from './task.entity';
+import { CommentEntity } from 'src/comments/comment.entity';
+import { ProjectEntity } from 'src/projects/project.entity';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
-@EntityRepository(Task)
-export class TasksRepository extends Repository<Task> {
+@EntityRepository(TaskEntity)
+export class TasksRepository extends Repository<TaskEntity> {
 
-  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  async getTasks(filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
     const {
       status,
       priority,
@@ -40,10 +40,10 @@ export class TasksRepository extends Repository<Task> {
   }
 
   async createTask(
-    project: Project,
+    project: ProjectEntity,
     author : UserEntity,
     createTaskDto: CreateTaskDto,
-  ): Promise<Task> {
+  ): Promise<TaskEntity> {
     const { title, description } = createTaskDto;
     
     const task = this.create({

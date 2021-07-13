@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AuthService } from '../auth.service';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
-import { UserType } from 'src/users/types/user.types';
+import { UserType } from 'src/users/types/user.type';
 import { VerifyCallback } from 'passport-google-oauth20';
 
 @Injectable()

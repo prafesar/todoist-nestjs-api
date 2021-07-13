@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpCode, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Project } from './project.entity';
+import { ProjectEntity } from './project.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { ProjectsRepository } from './projects.repository';
@@ -9,8 +9,12 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { TasksService } from 'src/tasks/tasks.service';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { Task } from 'src/tasks/task.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
+import { ProjectResponseInterface } from './types/project-response.interface';
+import { threadId } from 'worker_threads';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { UserRole } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class ProjectsService {
@@ -21,31 +25,37 @@ export class ProjectsService {
     private usersService: UsersService,
   ) {}
 
-  getProjects(filterDto: GetProjectsFilterDto): Promise<Project[]> {
+  getProjects(filterDto: GetProjectsFilterDto): Promise<ProjectEntity[]> {
     return this.projectsRepository.getProjects(filterDto);
   }
 
-  async getProjectById(id: string): Promise<Project> {
+  async getProjectById(id: string, currUser: UserEntity): Promise<ProjectEntity> {
     const found = await this.projectsRepository.findOne(id);
     if (!found) {
       throw new NotFoundException(`Project with ID: ${id} not found`);
     }
+    const users = await found.users;
+    const isUserInProject = users.some(user => user.id === currUser.id);
+    
+    if (!(currUser.role === UserRole.ADMIN) && !isUserInProject) {
+      throw new ForbiddenException('access is closed')
+    } 
     return found;
   }
 
-  createProject(
+  async createProject(
     author: UserEntity,
     createProjectDto: CreateProjectDto,
-  ): Promise<Project> {
-    return this.projectsRepository.createProject(author, createProjectDto);
+  ): Promise<ProjectResponseInterface> {
+    const project = await this.projectsRepository.createProject(author, createProjectDto);
+    return this.buildProjectResponse(project);
   }
 
   async addTaskInProject(
-    projectId: string,
+    project: ProjectEntity,
     user: UserEntity,
     createTaskDto: CreateTaskDto,
-  ): Promise<Task> {
-    const project = await this.getProjectById(projectId);
+  ): Promise<TaskEntity> {
     return this.tasksService.createTask(project, user, createTaskDto);
   }
 
@@ -57,7 +67,7 @@ export class ProjectsService {
     }
   }
 
-  async updateProjectStatus(id: string, updateProject: UpdateProjectStatusDto): Promise<Project> {
+  async updateProjectStatus(id: string, updateProject: UpdateProjectStatusDto): Promise<ProjectEntity> {
     const { status } = updateProject; 
     const project = status && await this.projectsRepository.preload({
       id,
@@ -69,23 +79,32 @@ export class ProjectsService {
     return this.projectsRepository.save(project);
   }
 
-  async addUserInProject(id: string, userId: string): Promise<Project> {
-    const newUser: UserEntity = await this.usersService.getUserById(userId);
-    const project: Project = await this.getProjectById(id);
-    const userAlreadyInProject: boolean = project.users.findIndex(user => user.id === userId) >= 0;
-    if (userAlreadyInProject) {
-      console.log((`User #${userId} already in project`));
-      return;
-    }
-    const users: UserEntity[] = [...project.users, newUser];
-    const updatedProject = await this.projectsRepository.preload({
-      id,
-      users,
-    })
-    if (!updatedProject) {
-      throw new NotFoundException(`Project #${id} not found`);
-    }
-    return this.projectsRepository.save(updatedProject);
-  }
+  // async addUserInProject(id: string, userId: string): Promise<ProjectEntity> {
+  //   const newUser: UserEntity = await this.usersService.getUserById(userId);
+  //   const project: ProjectEntity = await this.getProjectById(id);
+  //   const userAlreadyInProject: boolean = project.users.findIndex(user => user.id === userId) >= 0;
+  //   if (userAlreadyInProject) {
+  //     console.log((`User #${userId} already in project`));
+  //     return;
+  //   }
+  //   const users: UserEntity[] = [...project.users, newUser];
+  //   const updatedProject = await this.projectsRepository.preload({
+  //     id,
+  //     users,
+  //   })
+  //   if (!updatedProject) {
+  //     throw new NotFoundException(`Project #${id} not found`);
+  //   }
+  //   return this.projectsRepository.save(updatedProject);
+  // }
 
+  buildProjectResponse(project: ProjectEntity): ProjectResponseInterface {
+    const { author, ...rest } = project;
+    return {
+      project: {
+        ...rest,
+        authorId: author.id,
+      },
+    };
+  }
 }

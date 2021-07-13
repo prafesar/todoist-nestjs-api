@@ -8,7 +8,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { USER_NOT_EXIST, WRONG_PASSWORD } from './constants';
 import { ConfigService } from '@nestjs/config';
-import { UserResponseInterface } from 'src/users/types/userResponse.interface';
+import { UserResponseInterface } from 'src/users/types/user-response.interface';
 
 @Injectable()
 export class AuthService {

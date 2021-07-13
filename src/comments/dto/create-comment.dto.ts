@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-import { Task } from 'src/tasks/task.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
 import { UserEntity } from 'src/users/user.entity';
 
 export class CreateCommentDto {
   
   @IsNotEmpty()
-  task: Task;
+  task: TaskEntity;
 
   @IsNotEmpty()
   author: UserEntity;

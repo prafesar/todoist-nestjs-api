@@ -10,9 +10,9 @@ import {
 import { hash } from 'bcrypt';
 
 import { UserRole } from '../common/enums/user-role.enum';
-import { Project } from 'src/projects/project.entity';
-import { Task } from 'src/tasks/task.entity';
-import { Comment } from '../comments/comment.entity';
+import { ProjectEntity } from 'src/projects/project.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
+import { CommentEntity } from '../comments/comment.entity';
 
 @Entity({name: 'users'})
 export class UserEntity {
@@ -35,17 +35,17 @@ export class UserEntity {
   @Column()
   role: UserRole;
 
-  @OneToMany((_type) => Task, (task) => task.author, {eager: false})
-  tasks: Task[];
+  @OneToMany((_type) => TaskEntity, (task) => task.author, {eager: false})
+  tasks: TaskEntity[];
 
-  @OneToMany((_type) => Comment, (comment) => comment.author, {eager: false})
-  comments: Comment[];
+  @OneToMany((_type) => CommentEntity, (comment) => comment.author, {eager: false})
+  comments: CommentEntity[];
 
   @ManyToMany(
-    (_type) => Project,
+    (_type) => ProjectEntity,
     project => project.users,
   )
-  projects: Project[];
+  projects: ProjectEntity[];
 
   @BeforeInsert()
   async hashPassword() {

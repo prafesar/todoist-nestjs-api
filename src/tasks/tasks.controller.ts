@@ -10,9 +10,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { Task } from './task.entity';
+import { TaskEntity } from './task.entity';
 import { UserEntity } from 'src/users/user.entity';
-import { Comment } from 'src/comments/comment.entity';
+import { CommentEntity } from 'src/comments/comment.entity';
 import { TasksService } from './tasks.service';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
@@ -35,12 +35,12 @@ export class TasksController {
   ) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
     return this.tasksService.getTasks(filterDto);
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Promise<Task> {
+  getTaskById(@Param('id') id: string): Promise<TaskEntity> {
     return this.tasksService.getTaskById(id);
   }
 
@@ -55,7 +55,7 @@ export class TasksController {
     @Body('title') title: string,
     @Body('description') description: string,
     @GetUser() author: UserEntity,
-  ): Promise<Comment> {
+  ): Promise<CommentEntity> {
     const task = await this.tasksService.getTaskById(taskId);
     const createCommentDto: CreateCommentDto = {
       task,
@@ -70,7 +70,7 @@ export class TasksController {
   updateTaskStatus(
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-  ): Promise<Task> {
+  ): Promise<TaskEntity> {
     const { status } = updateTaskStatusDto;
     return this.tasksService.updateTaskStatus(id, status);
   }
@@ -79,7 +79,7 @@ export class TasksController {
   updateTaskPriority(
     @Param('id') id: string,
     @Body() updateTaskPriorityDto: UpdateTaskPriorityDto,
-  ): Promise<Task> {
+  ): Promise<TaskEntity> {
     const { priority } = updateTaskPriorityDto;
     return this.tasksService.updateTaskPriority(id, priority);
   }

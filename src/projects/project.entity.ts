@@ -11,11 +11,11 @@ import {
 import { Exclude } from 'class-transformer';
 
 import { ProjectStatus } from './project-status.enum';
-import { Task } from 'src/tasks/task.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
 import { UserEntity } from 'src/users/user.entity';
 
-@Entity()
-export class Project {
+@Entity({name: 'projects'})
+export class ProjectEntity {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -35,9 +35,8 @@ export class Project {
   @ManyToOne((_type) => UserEntity, { eager: true })
   author: UserEntity;
   
-  @OneToMany((_type) => Task, (task) => task.project, { eager: true })
-  @Exclude({ toPlainOnly: true })
-  tasks: Task[];
+  @OneToMany((_type) => TaskEntity, (task) => task.project)
+  tasks: Promise<TaskEntity[]>;
 
   @JoinTable()
   @ManyToMany(
@@ -48,7 +47,6 @@ export class Project {
       eager: true,
     }
   )
-  @Exclude({ toPlainOnly: true })
-  users: UserEntity[];
+  users: Promise<UserEntity[]>;
 
 }

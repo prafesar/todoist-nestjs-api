@@ -6,11 +6,11 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { Task } from 'src/tasks/task.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
 import { UserEntity } from 'src/users/user.entity';
 
-@Entity()
-export class Comment {
+@Entity({name: 'comments'})
+export class CommentEntity {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,9 +28,9 @@ export class Comment {
   description: string;
   
   @ManyToOne(
-    (_type) => Task,
+    (_type) => TaskEntity,
     task => task.comments,
   )
-  task: Task;
+  task: TaskEntity;
 
 }

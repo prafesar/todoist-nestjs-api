@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Project } from 'src/projects/project.entity';
+import { ProjectEntity } from 'src/projects/project.entity';
 import { UserEntity } from 'src/users/user.entity';
-import { Task } from './task.entity';
-import { Comment } from 'src/comments/comment.entity';
+import { TaskEntity } from './task.entity';
+import { CommentEntity } from 'src/comments/comment.entity';
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -12,6 +12,7 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TasksRepository } from './tasks.repository';
 import { CommentsService } from 'src/comments/comments.service';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { TaskResponseInterface } from './types/task-response.interface';
 
 @Injectable()
 export class TasksService {
@@ -21,11 +22,11 @@ export class TasksService {
     private readonly commentsService: CommentsService,
   ) {}
 
-  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  getTasks(filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
     return this.tasksRepository.getTasks(filterDto);
   }
 
-  async getTaskById(id: string): Promise<Task> {
+  async getTaskById(id: string): Promise<TaskEntity> {
     const found = await this.tasksRepository.findOne(id);
     if (!found) {
       throw new NotFoundException(`Task with ID: ${id} not found`);
@@ -34,10 +35,10 @@ export class TasksService {
   }
 
   async createTask(
-    project: Project,
+    project: ProjectEntity,
     author : UserEntity,
     createTaskDto: CreateTaskDto
-  ): Promise<Task> {
+  ): Promise<TaskEntity> {
     return this.tasksRepository.createTask(project, author, createTaskDto);
   }
 
@@ -49,7 +50,7 @@ export class TasksService {
     }
   }
 
-  async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
+  async updateTaskStatus(id: string, status: TaskStatus): Promise<TaskEntity> {
     const task = await this.getTaskById(id);
 
     task.status = status;
@@ -58,13 +59,24 @@ export class TasksService {
     return task;
   }
 
-  async updateTaskPriority(id: string, priority: TaskPriority): Promise<Task> {
+  async updateTaskPriority(id: string, priority: TaskPriority): Promise<TaskEntity> {
     const task = await this.getTaskById(id);
 
     task.priority = priority;
     await this.tasksRepository.save(task);
 
     return task;
+  }
+
+  buildTaskResponse(task: TaskEntity): TaskResponseInterface {
+    const { author, project, ...rest } = task;
+    return {
+      task: {
+        ...rest,
+        authorId: author.id,
+        projectId: project.id
+      },
+    };
   }
 
 }

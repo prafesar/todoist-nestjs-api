@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
-import { Task } from 'src/tasks/task.entity';
-import { Comment } from '../comments/comment.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
+import { CommentEntity } from '../comments/comment.entity';
 import { TasksModule } from 'src/tasks/tasks.module';
 import { UsersModule } from 'src/users/users.module';
 
@@ -13,7 +13,7 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProjectsRepository, Comment, Task]),
+    TypeOrmModule.forFeature([ProjectsRepository, CommentEntity, TaskEntity]),
     TasksModule,
     AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),

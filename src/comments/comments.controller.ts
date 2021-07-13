@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
 
 import { CommentsService } from './comments.service';
-import { Comment } from 'src/comments/comment.entity';
+import { CommentEntity } from 'src/comments/comment.entity';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-role.enum';
@@ -16,13 +16,13 @@ export class CommentsController {
   ) {}
 
   @Get('/:id')
-  getComment(@Param('id') id: string): Promise<Comment> {
+  getComment(@Param('id') id: string): Promise<CommentEntity> {
     return this.commentsService.getCommentById(id);
   }
 
   // only owner
   @Patch('/:id')
-  updateComment(@Param('id') id: string, updateComment: UpdateCommentDto): Promise<Comment> {
+  updateComment(@Param('id') id: string, updateComment: UpdateCommentDto): Promise<CommentEntity> {
     return this.commentsService.updateComment(id, updateComment);
   }
 

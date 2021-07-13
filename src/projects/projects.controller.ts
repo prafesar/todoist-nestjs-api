@@ -12,20 +12,23 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { Project } from './project.entity';
+import { ProjectEntity } from './project.entity';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { Task } from 'src/tasks/task.entity';
+import { TaskEntity } from 'src/tasks/task.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { GetTasksFilterDto } from 'src/tasks/dto/get-tasks-filter.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GoogleAuthGuard } from 'src/auth/guards/google-auth.guard';
+import { ProjectResponseInterface } from './types/project-response.interface';
+import { TasksService } from 'src/tasks/tasks.service';
+import { TaskResponseInterface } from 'src/tasks/types/task-response.interface';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -33,64 +36,62 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class ProjectsController {
   constructor(
     private projectsService: ProjectsService,
+    private readonly tasksService: TasksService,
   ) {}
-
-  // only where current user
-  @Get()
-  @Roles(UserRole.USER)
-  getProjects(@Query() filterDto: GetProjectsFilterDto): Promise<Project[]> {
-    return this.projectsService.getProjects(filterDto);
-  }
-
-  // only if current user in project
-  @Get('/:id')
-  @Roles(UserRole.USER)
-  async getProjectById( // with tasks
-    @Param('id') id: string,
-    @GetUser() currUser: UserEntity,
-  ): Promise<Project> {
-    const project: Project = await this.projectsService.getProjectById(id)
-    const { users } = project;
-
-    const userIsMissing = !users.some((user) => user.id === currUser.id)
-    if (userIsMissing) {
-      throw new HttpException('User is not in this project', HttpStatus.FORBIDDEN)
-    }
-    return project;
-  }
 
   @Post()
   createProject(
     @Body() createProjectDto: CreateProjectDto,
     @GetUser() author: UserEntity,
-  ): Promise<Project> {
+  ): Promise<ProjectResponseInterface> {
     return this.projectsService.createProject(author, createProjectDto);
   }
 
+  // list of projects
+  @Roles(UserRole.USER)
+  @Get()
+  getProjects(
+    @Query() filterDto: GetProjectsFilterDto,
+  ): Promise<ProjectEntity[]> {
+    return this.projectsService.getProjects(filterDto);
+  }
+
+  // only if user admin or current user in project
+  @Roles(UserRole.USER)
+  @Get('/:id')
+  async getProjectById( // with tasks
+    @Param('id') id: string,
+    @GetUser() currUser: UserEntity,
+  ): Promise<ProjectResponseInterface> {
+    const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser);
+    return this.projectsService.buildProjectResponse(project)
+
+  }
+  
   @Roles(UserRole.USER)
   @Post('/:id/tasks')
   async addTaskInProject(
     @Param('id') id: string,
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() currUser: UserEntity,
-  ): Promise<Task> {
-    const project: Project = await this.projectsService.getProjectById(id)
-    const { users } = project;
-    // only if current user in project
-    const userIsMissing = !users.some((user) => user.id === currUser.id)
-    if (userIsMissing) {
-      throw new HttpException('User is not in this project', HttpStatus.FORBIDDEN)
-    }
-    return this.projectsService.addTaskInProject(id, currUser, createTaskDto);
+  ): Promise<TaskResponseInterface> {
+    const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser)
+    const task = await this.projectsService.addTaskInProject(project, currUser, createTaskDto);
+    return this.tasksService.buildTaskResponse(task);
   }
 
-  @Post('/:id/users')
-  addUserInProject(
-    @Param('id') projectId: string,
-    @Body('userId') userId: string,
-  ): Promise<Project> {
-    return this.projectsService.addUserInProject(projectId, userId);
-  }
+  // @Post('/:id/users')
+  // addUserInProject(
+  //   @Param('id') projectId: string,
+  //   @Body('userId') userId: string,
+  // ): Promise<ProjectEntity> {
+  //   return this.projectsService.addUserInProject(projectId, userId);
+  // }
+
+  // {
+  //   project: {},
+  //   users: []
+  // }
 
   @Delete('/:id')
   deleteProject(@Param('id') id: string): Promise<void> {
@@ -101,7 +102,7 @@ export class ProjectsController {
   updateProjectStatus(
     @Param('id') id: string,
     @Body() updateProject: UpdateProjectStatusDto,
-  ): Promise<Project> {
+  ): Promise<ProjectEntity> {
     return this.projectsService.updateProjectStatus(id, updateProject);
   }
 

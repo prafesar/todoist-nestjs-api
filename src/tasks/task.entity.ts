@@ -6,16 +6,15 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { UserEntity } from 'src/users/user.entity';
-import { Project } from 'src/projects/project.entity';
-import { Comment } from 'src/comments/comment.entity';
+import { ProjectEntity } from 'src/projects/project.entity';
+import { CommentEntity } from 'src/comments/comment.entity';
 
-@Entity()
-export class Task {
+@Entity({name: 'tasks'})
+export class TaskEntity {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -35,18 +34,17 @@ export class Task {
   @Column()
   priority: TaskPriority;
 
-  @ManyToOne((_type) => UserEntity, (user) => user.tasks, { eager: false })
-  @Exclude({ toPlainOnly: true })
+  @ManyToOne((_type) => UserEntity, (user) => user.tasks, { eager: true })
   author: UserEntity;
 
-  @ManyToOne((_type) => Project, (project) => project.tasks, { eager: false })
-  project: Project;
+  @ManyToOne((_type) => ProjectEntity, (project) => project.tasks, { eager: true })
+  project: ProjectEntity;
 
   @OneToMany(
-    (_type) => Comment,
+    (_type) => CommentEntity,
     comment => comment.task,
     { eager: false },
   )
-  comments: Comment[];
+  comments: CommentEntity[];
   
 }
