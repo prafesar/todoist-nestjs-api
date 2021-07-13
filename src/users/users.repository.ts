@@ -23,6 +23,7 @@ export class UsersRepository extends Repository<UserEntity> {
         throw new InternalServerErrorException();
       }
     }
+    delete user.password;
     return user;
   }
 

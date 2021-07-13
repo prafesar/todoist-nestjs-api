@@ -10,17 +10,12 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { USER_NOT_EXIST, WRONG_PASSWORD } from './constants';
 import { ConfigService } from '@nestjs/config';
 import { UserResponseInterface } from 'src/users/types/userResponse.interface';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UsersRepository } from 'src/users/users.repository';
-import { RolesGuard } from './guards/roles.guard';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly config: ConfigService,
-    private readonly jwtsService: JwtsService,
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<UserResponseInterface> {
@@ -33,6 +28,7 @@ export class AuthService {
   ): Promise<UserResponseInterface> {
     const user: UserEntity = await this.getAuthenticatedUser(dto);
     const token = this.generateJwt(user);
+    // respons for frontend
     return this.buildUserResponse(user, 'jwt', token);
   }
 
@@ -56,7 +52,8 @@ export class AuthService {
     if (!isPasswordMatching) {
       throw new UnauthorizedException(WRONG_PASSWORD);
     }
-    return true; 
+    console.log('pass is ok')
+    return isPasswordMatching; 
   }
 
   generateJwt(user: UserEntity): string {
@@ -86,6 +83,7 @@ export class AuthService {
       return 'No user from google'
     }
 
+    delete req.user.password;
     return {
       message: 'User information from google',
       user: req.user

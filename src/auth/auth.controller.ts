@@ -19,8 +19,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
   
   @Post('/register')
-  async register(@Body('user') createUserDto: CreateUserDto): Promise<UserResponseInterface> {
-    return await this.authService.register(createUserDto);
+  async register(@Body('user') dto: CreateUserDto): Promise<UserResponseInterface> {
+    return await this.authService.register(dto);
   }
 
   @UseGuards(LocalAuthGuard)

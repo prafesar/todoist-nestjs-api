@@ -24,16 +24,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class UsersController {
   constructor( private usersService: UsersService) {}
   
-  @Roles(UserRole.USER)
   @Get()
   getAllUsers(): Promise<UserEntity[]> {
     return this.usersService.getAllUsers();
-  }
-
-  @Roles(UserRole.USER)
-  @Get('/find')
-  getUser(@Body() getUserDto: GetUserDto): Promise<UserEntity> {
-    return this.usersService.getUser(getUserDto);
   }
 
   @Roles(UserRole.USER)

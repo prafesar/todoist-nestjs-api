@@ -18,16 +18,6 @@ export class UsersService {
     return this.usersRepository.createUser(createUserDto);
   }
 
-  async getUser(getUserDto: GetUserDto): Promise<UserEntity> {
-    const { email, login } = getUserDto;
-    if (email) {
-      return this.getUserByEmail(email);
-    }
-    if (login) {
-      return this.getUserByLogin(login);
-    }
-  }
-
   async getAllUsers(): Promise<UserEntity[]> {
     return this.usersRepository.find();
   }
@@ -43,7 +33,7 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<UserEntity> {
     const found = await this.usersRepository.findOne(
       { email },
-      { select: ['id', 'login', 'email', 'password'] },
+      { select: ['id', 'login', 'email', 'role', 'password'] },
     );
     if (!found) {
       throw new NotFoundException(`User with email: ${email} not found`);

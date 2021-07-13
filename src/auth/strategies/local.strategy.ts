@@ -4,7 +4,8 @@ import { Injectable } from '@nestjs/common';
 
 import { AuthService } from '../auth.service';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
-import { UserEntity } from 'src/users/user.entity';
+import { UserType } from 'src/users/types/user.types';
+import { VerifyCallback } from 'passport-google-oauth20';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -15,9 +16,12 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     });
   }
 
-  async validate(email: string, password: string): Promise<UserEntity> {
+  async validate(email: string, password: string, done: VerifyCallback): Promise<void> {
+    // get user data
     const dto: AuthCredentialsDto = { email, password };
     const user = await this.authService.getAuthenticatedUser(dto);
-    return user;
+    // wright in req.user
+    const userResponse = this.authService.buildUserResponse(user, 'local', '');
+    done(null, userResponse.user);
   }
 }
