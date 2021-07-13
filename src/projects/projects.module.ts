@@ -10,7 +10,6 @@ import { ProjectsController } from './projects.controller';
 import { ProjectsRepository } from './projects.repository';
 import { ProjectsService } from './projects.service';
 import { PassportModule } from '@nestjs/passport';
-import { JwtsModule } from 'src/jwts/jwts.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { JwtsModule } from 'src/jwts/jwts.module';
     AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     UsersModule,
-    JwtsModule,
   ],
   controllers: [ProjectsController],
   providers: [ProjectsService],
