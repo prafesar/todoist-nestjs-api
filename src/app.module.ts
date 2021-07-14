@@ -10,9 +10,6 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CommentsModule } from './comments/comments.module';
 import { NotifyModule } from './notify/notify.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -41,8 +38,8 @@ import { AppService } from './app.service';
     CommentsModule,
     NotifyModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 
 export class AppModule {}
