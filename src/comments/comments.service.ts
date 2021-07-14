@@ -47,7 +47,12 @@ export class CommentsService {
     return found;
   }
 
-  async updateComment(id: string, commentDto: UpdateCommentDto): Promise<CommentEntity> {
+  async updateComment(
+    id: string,
+    commentDto: UpdateCommentDto,
+    currUser: UserEntity,
+  ): Promise<CommentEntity> {
+    // need check if owner
     const comment = await this.commentsRepository.preload({
       id,
       ...commentDto,

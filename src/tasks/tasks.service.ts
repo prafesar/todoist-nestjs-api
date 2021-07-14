@@ -34,6 +34,14 @@ export class TasksService {
     return found;
   }
 
+  async addCommentForTask(
+    task: TaskEntity,
+    dto: CreateCommentDto,
+    author: UserEntity
+  ): Promise<any> {
+    return 'add comment for task';
+  }
+
   async createTask(
     project: ProjectEntity,
     author : UserEntity,

@@ -6,6 +6,8 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { UserEntity } from 'src/users/user.entity';
 
 @UseGuards(RolesGuard)
 @Roles(UserRole.USER)
@@ -22,8 +24,12 @@ export class CommentsController {
 
   // only owner
   @Patch('/:id')
-  updateComment(@Param('id') id: string, updateComment: UpdateCommentDto): Promise<CommentEntity> {
-    return this.commentsService.updateComment(id, updateComment);
+  updateComment(
+    @Param('id') id: string, 
+    updateComment: UpdateCommentDto,
+    @GetUser() currUser: UserEntity,
+  ): Promise<CommentEntity> {
+    return this.commentsService.updateComment(id, updateComment, currUser);
   }
 
   @Roles(UserRole.ADMIN)
