@@ -15,6 +15,7 @@ import { ProjectResponseInterface } from './types/project-response.interface';
 import { threadId } from 'worker_threads';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-role.enum';
+import { getConnection } from 'typeorm';
 
 @Injectable()
 export class ProjectsService {
@@ -79,24 +80,26 @@ export class ProjectsService {
     return this.projectsRepository.save(project);
   }
 
-  // async addUserInProject(id: string, userId: string): Promise<ProjectEntity> {
-  //   const newUser: UserEntity = await this.usersService.getUserById(userId);
-  //   const project: ProjectEntity = await this.getProjectById(id);
-  //   const userAlreadyInProject: boolean = project.users.findIndex(user => user.id === userId) >= 0;
-  //   if (userAlreadyInProject) {
-  //     console.log((`User #${userId} already in project`));
-  //     return;
-  //   }
-  //   const users: UserEntity[] = [...project.users, newUser];
-  //   const updatedProject = await this.projectsRepository.preload({
-  //     id,
-  //     users,
-  //   })
-  //   if (!updatedProject) {
-  //     throw new NotFoundException(`Project #${id} not found`);
-  //   }
-  //   return this.projectsRepository.save(updatedProject);
-  // }
+  async addUserInProject(id: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
+    const newUser: UserEntity = await this.usersService.getUserById(userId);
+    const project: ProjectEntity = await this.getProjectById(id, currUser);
+    
+    const usersInProject = await project.users;
+    const userInProject: boolean = usersInProject.findIndex(user => user.id === userId) >= 0;
+    if (userInProject) {
+      console.log((`User #${userId} already in project`));
+      return;
+    }
+    
+    // add newUser
+    await getConnection()
+    .createQueryBuilder()
+    .relation(ProjectEntity, "users")
+    .of(project)
+    .add(newUser);
+
+    return await this.getProjectById(id, currUser);
+  }
 
   buildProjectResponse(project: ProjectEntity): ProjectResponseInterface {
     const { author, ...rest } = project;

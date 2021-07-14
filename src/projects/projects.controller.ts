@@ -80,18 +80,14 @@ export class ProjectsController {
     return this.tasksService.buildTaskResponse(task);
   }
 
-  // @Post('/:id/users')
-  // addUserInProject(
-  //   @Param('id') projectId: string,
-  //   @Body('userId') userId: string,
-  // ): Promise<ProjectEntity> {
-  //   return this.projectsService.addUserInProject(projectId, userId);
-  // }
-
-  // {
-  //   project: {},
-  //   users: []
-  // }
+  @Post('/:id/users')
+  addUserInProject(
+    @Param('id') projectId: string,
+    @Body('userId') userId: string,
+    @GetUser() currUser: UserEntity,
+  ): Promise<ProjectEntity> {
+    return this.projectsService.addUserInProject(projectId, userId, currUser);
+  }
 
   @Delete('/:id')
   deleteProject(@Param('id') id: string): Promise<void> {
