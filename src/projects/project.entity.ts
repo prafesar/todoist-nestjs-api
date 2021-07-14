@@ -31,11 +31,11 @@ export class ProjectEntity {
   @Column()
   status: ProjectStatus;
 
-  @ManyToOne((_type) => UserEntity, { eager: true })
+  @ManyToOne((_type) => UserEntity)
   author: UserEntity;
   
   @OneToMany((_type) => TaskEntity, (task) => task.project)
-  tasks: Promise<TaskEntity[]>;
+  tasks: TaskEntity[];
 
   @JoinTable()
   @ManyToMany(
@@ -43,9 +43,8 @@ export class ProjectEntity {
     user => user.projects,
     {
       cascade: true,
-      eager: true,
     }
   )
-  users: Promise<UserEntity[]>;
+  users: UserEntity[];
 
 }

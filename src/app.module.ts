@@ -10,6 +10,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CommentsModule } from './comments/comments.module';
 import { NotifyModule } from './notify/notify.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -39,8 +41,8 @@ import { NotifyModule } from './notify/notify.module';
     CommentsModule,
     NotifyModule
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 
 export class AppModule {}

@@ -34,16 +34,15 @@ export class TaskEntity {
   @Column()
   priority: TaskPriority;
 
-  @ManyToOne((_type) => UserEntity, (user) => user.tasks, { eager: true })
+  @ManyToOne((_type) => UserEntity, (user) => user.tasks)
   author: UserEntity;
 
-  @ManyToOne((_type) => ProjectEntity, (project) => project.tasks, { eager: true })
+  @ManyToOne((_type) => ProjectEntity, (project) => project.tasks)
   project: ProjectEntity;
 
   @OneToMany(
     (_type) => CommentEntity,
     comment => comment.task,
-    { eager: false },
   )
   comments: CommentEntity[];
   
