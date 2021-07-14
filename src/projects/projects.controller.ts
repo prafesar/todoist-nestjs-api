@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -19,13 +17,11 @@ import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { TaskEntity } from 'src/tasks/task.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GoogleAuthGuard } from 'src/auth/guards/google-auth.guard';
 import { ProjectResponseInterface } from './types/project-response.interface';
 import { TasksService } from 'src/tasks/tasks.service';
 import { TaskResponseInterface } from 'src/tasks/types/task-response.interface';
@@ -59,13 +55,12 @@ export class ProjectsController {
   // only if user admin or current user in project
   @Roles(UserRole.USER)
   @Get('/:id')
-  async getProjectById( // with tasks
+  async getProjectById(
     @Param('id') id: string,
     @GetUser() currUser: UserEntity,
   ): Promise<ProjectResponseInterface> {
     const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser);
     return this.projectsService.buildProjectResponse(project)
-
   }
   
   @Roles(UserRole.USER)
@@ -81,12 +76,13 @@ export class ProjectsController {
   }
 
   @Post('/:id/users')
-  addUserInProject(
+  async addUserInProject(
     @Param('id') projectId: string,
     @Body('userId') userId: string,
     @GetUser() currUser: UserEntity,
-  ): Promise<ProjectEntity> {
-    return this.projectsService.addUserInProject(projectId, userId, currUser);
+  ): Promise<ProjectResponseInterface> {
+    const project = await this.projectsService.addUserInProject(projectId, userId, currUser);
+    return this.projectsService.buildProjectResponse(project)
   }
 
   @Delete('/:id')

@@ -8,7 +8,6 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 
 import { ProjectStatus } from './project-status.enum';
 import { TaskEntity } from 'src/tasks/task.entity';

@@ -1,5 +1,6 @@
-import { ForbiddenException, HttpCode, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getConnection } from 'typeorm';
 
 import { ProjectEntity } from './project.entity';
 import { UserEntity } from 'src/users/user.entity';
@@ -12,10 +13,7 @@ import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { TaskEntity } from 'src/tasks/task.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { ProjectResponseInterface } from './types/project-response.interface';
-import { threadId } from 'worker_threads';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-role.enum';
-import { getConnection } from 'typeorm';
 
 @Injectable()
 export class ProjectsService {
