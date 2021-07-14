@@ -44,6 +44,7 @@ export class TasksController {
     return this.tasksService.getTaskById(id);
   }
 
+  @Roles(UserRole.ADMIN)
   @Delete('/:id')
   deleteTask(@Param('id') id: string): Promise<void> {
     return this.tasksService.deleteTask(id);
