@@ -28,26 +28,21 @@ export class ProjectsService {
     return this.projectsRepository.getProjects(filterDto);
   }
 
-  async getProjectById(id: string, currUser: UserEntity): Promise<ProjectEntity> {
-    const found = await this.projectsRepository.findOne(id);
-    if (!found) {
-      throw new NotFoundException(`Project with ID: ${id} not found`);
-    }
-    const users = await found.users;
-    const isUserInProject = users.some(user => user.id === currUser.id);
+  async findOne(id: string, currUser: UserEntity): Promise<ProjectEntity> {
+    const project: ProjectEntity = await this.projectsRepository.findOne( id, {
+      relations: ['author', 'users', 'tasks']
+    });
     
-    if (!(currUser.role === UserRole.ADMIN) && !isUserInProject) {
-      throw new ForbiddenException('access is closed')
-    } 
-    return found;
+    const userInProject = project.users.some(({ id }) => id === currUser.id)
+    if (!currUser.isAdmin() && userInProject) {
+      throw new ForbiddenException('access is denied');
+    }
+
+    return project;
   }
 
-  async createProject(
-    author: UserEntity,
-    createProjectDto: CreateProjectDto,
-  ): Promise<ProjectResponseInterface> {
-    const project = await this.projectsRepository.createProject(author, createProjectDto);
-    return this.buildProjectResponse(project);
+  async createProject(author: UserEntity, dto: CreateProjectDto): Promise<ProjectEntity> {
+    return await this.projectsRepository.createProject(author, dto);
   }
 
   async addTaskInProject(
@@ -80,7 +75,7 @@ export class ProjectsService {
 
   async addUserInProject(id: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
     const newUser: UserEntity = await this.usersService.getUserById(userId);
-    const project: ProjectEntity = await this.getProjectById(id, currUser);
+    const project: ProjectEntity = await this.findOne(id, currUser);
     
     const usersInProject = await project.users;
     const userInProject: boolean = usersInProject.findIndex(user => user.id === userId) >= 0;
@@ -96,15 +91,17 @@ export class ProjectsService {
     .of(project)
     .add(newUser);
 
-    return await this.getProjectById(id, currUser);
+    return await this.findOne(id, currUser);
   }
 
   buildProjectResponse(project: ProjectEntity): ProjectResponseInterface {
-    const { author, ...rest } = project;
+    const { author, tasks, users, ...rest } = project;
     return {
       project: {
         ...rest,
         authorId: author.id,
+        users: users.map(({ id }) => id),
+        tasks: tasks.map(({ id }) => id),
       },
     };
   }

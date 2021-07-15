@@ -36,11 +36,12 @@ export class ProjectsController {
   ) {}
 
   @Post()
-  createProject(
+  async createProject(
     @Body() createProjectDto: CreateProjectDto,
     @GetUser() author: UserEntity,
   ): Promise<ProjectResponseInterface> {
-    return this.projectsService.createProject(author, createProjectDto);
+    const project = await this.projectsService.createProject(author, createProjectDto);
+    return this.projectsService.buildProjectResponse(project);
   }
 
   // list of projects
@@ -59,7 +60,7 @@ export class ProjectsController {
     @Param('id') id: string,
     @GetUser() currUser: UserEntity,
   ): Promise<ProjectResponseInterface> {
-    const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser);
+    const project: ProjectEntity = await this.projectsService.findOne(id, currUser);
     return this.projectsService.buildProjectResponse(project)
   }
   
@@ -70,7 +71,7 @@ export class ProjectsController {
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() currUser: UserEntity,
   ): Promise<TaskResponseInterface> {
-    const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser)
+    const project: ProjectEntity = await this.projectsService.findOne(id, currUser)
     const task = await this.projectsService.addTaskInProject(project, currUser, createTaskDto);
     return this.tasksService.buildTaskResponse(task);
   }

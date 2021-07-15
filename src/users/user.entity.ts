@@ -13,6 +13,7 @@ import { UserRole } from '../common/enums/user-role.enum';
 import { ProjectEntity } from 'src/projects/project.entity';
 import { TaskEntity } from 'src/tasks/task.entity';
 import { CommentEntity } from '../comments/comment.entity';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Entity({name: 'users'})
 export class UserEntity {
@@ -50,6 +51,15 @@ export class UserEntity {
   @BeforeInsert()
   async hashPassword() {
     this.password = await hash(this.password, 10);
+  }
+
+  public isOwner(item: ProjectEntity | TaskEntity | CommentEntity ): boolean {
+    const { author } = item;
+    return this.id === author.id;
+  }
+
+  public isAdmin(): boolean {
+    return this.role === UserRole.ADMIN;
   }
 
 }
