@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { hash, compare } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
-import { UserEntity } from 'src/users/user.entity';
+import { UserEntity } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { USER_NOT_EXIST, WRONG_PASSWORD } from './constants';
-import { ConfigService } from '@nestjs/config';
-import { UserResponseInterface } from 'src/users/types/user-response.interface';
+import { UserResponseInterface } from '../users/types/user-response.interface';
 
 @Injectable()
 export class AuthService {

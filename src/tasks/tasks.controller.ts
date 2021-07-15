@@ -11,19 +11,19 @@ import {
 } from '@nestjs/common';
 
 import { TaskEntity } from './task.entity';
-import { UserEntity } from 'src/users/user.entity';
-import { CommentEntity } from 'src/comments/comment.entity';
+import { UserEntity } from '../users/user.entity';
+import { CommentEntity } from '../comments/comment.entity';
 import { TasksService } from './tasks.service';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { UpdateTaskPriorityDto } from './dto/update-task-priority.dto';
-import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { CommentsService } from 'src/comments/comments.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { CreateCommentDto } from '../comments/dto/create-comment.dto';
+import { GetUser } from '../common/decorators/get-user.decorator';
+import { CommentsService } from '../comments/comments.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { UserRole } from '../common/enums/user-role.enum';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.USER)

@@ -10,10 +10,9 @@ import {
 import { hash } from 'bcrypt';
 
 import { UserRole } from '../common/enums/user-role.enum';
-import { ProjectEntity } from 'src/projects/project.entity';
-import { TaskEntity } from 'src/tasks/task.entity';
+import { ProjectEntity } from '../projects/project.entity';
+import { TaskEntity } from '../tasks/task.entity';
 import { CommentEntity } from '../comments/comment.entity';
-import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Entity({name: 'users'})
 export class UserEntity {

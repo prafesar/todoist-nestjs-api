@@ -1,13 +1,13 @@
 import { Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
 
 import { CommentsService } from './comments.service';
-import { CommentEntity } from 'src/comments/comment.entity';
+import { CommentEntity } from './comment.entity';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { UserEntity } from 'src/users/user.entity';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { UserRole } from '../common/enums/user-role.enum';
+import { Roles } from '../common/decorators/roles.decorator';
+import { GetUser } from '../common/decorators/get-user.decorator';
+import { UserEntity } from '../users/user.entity';
 
 @UseGuards(RolesGuard)
 @Roles(UserRole.USER)

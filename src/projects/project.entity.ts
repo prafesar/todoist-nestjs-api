@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 
 import { ProjectStatus } from './project-status.enum';
-import { TaskEntity } from 'src/tasks/task.entity';
-import { UserEntity } from 'src/users/user.entity';
+import { TaskEntity } from '../tasks/task.entity';
+import { UserEntity } from '../users/user.entity';
 
 @Entity({name: 'projects'})
 export class ProjectEntity {

@@ -3,17 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 import { ProjectEntity } from './project.entity';
-import { UserEntity } from 'src/users/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UserEntity } from '../users/user.entity';
+import { UsersService } from '../users/users.service';
 import { ProjectsRepository } from './projects.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
-import { TasksService } from 'src/tasks/tasks.service';
-import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { TaskEntity } from 'src/tasks/task.entity';
+import { TasksService } from '../tasks/tasks.service';
+import { CreateTaskDto } from '../tasks/dto/create-task.dto';
+import { TaskEntity } from '../tasks/task.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { ProjectResponseInterface } from './types/project-response.interface';
-import { UserRole } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class ProjectsService {

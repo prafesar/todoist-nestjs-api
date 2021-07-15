@@ -9,9 +9,9 @@ import {
 
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { TaskStatus } from '../common/enums/task-status.enum';
-import { UserEntity } from 'src/users/user.entity';
-import { ProjectEntity } from 'src/projects/project.entity';
-import { CommentEntity } from 'src/comments/comment.entity';
+import { UserEntity } from '../users/user.entity';
+import { ProjectEntity } from '../projects/project.entity';
+import { CommentEntity } from '../comments/comment.entity';
 
 @Entity({name: 'tasks'})
 export class TaskEntity {

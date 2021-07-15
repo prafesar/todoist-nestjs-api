@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from 'src/auth/auth.module';
-import { TaskEntity } from 'src/tasks/task.entity';
-import { CommentEntity } from '../comments/comment.entity';
-import { TasksModule } from 'src/tasks/tasks.module';
-import { UsersModule } from 'src/users/users.module';
 
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
 import { ProjectsController } from './projects.controller';
 import { ProjectsRepository } from './projects.repository';
 import { ProjectsService } from './projects.service';
-import { PassportModule } from '@nestjs/passport';
+import { TasksModule } from '../tasks/tasks.module';
+import { TaskEntity } from '../tasks/task.entity';
+import { CommentEntity } from '../comments/comment.entity';
 
 @Module({
   imports: [

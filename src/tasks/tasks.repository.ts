@@ -1,14 +1,12 @@
 import { EntityRepository, Repository } from 'typeorm';
 
-import { UserEntity } from 'src/users/user.entity';
+import { UserEntity } from '../users/user.entity';
 import { TaskEntity } from './task.entity';
-import { CommentEntity } from 'src/comments/comment.entity';
-import { ProjectEntity } from 'src/projects/project.entity';
+import { ProjectEntity } from '../projects/project.entity';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskPriority } from '../common/enums/task-priority.enum';
-import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
 @EntityRepository(TaskEntity)
 export class TasksRepository extends Repository<TaskEntity> {

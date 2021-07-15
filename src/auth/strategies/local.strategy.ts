@@ -1,11 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { VerifyCallback } from 'passport-google-oauth20';
 
 import { AuthService } from '../auth.service';
 import { AuthCredentialsDto } from '../dto/auth-credentials.dto';
-import { UserType } from 'src/users/types/user.type';
-import { VerifyCallback } from 'passport-google-oauth20';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {

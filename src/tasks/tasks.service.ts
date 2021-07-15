@@ -1,17 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { ProjectEntity } from 'src/projects/project.entity';
-import { UserEntity } from 'src/users/user.entity';
+import { ProjectEntity } from '../projects/project.entity';
+import { UserEntity } from '../users/user.entity';
 import { TaskEntity } from './task.entity';
-import { CommentEntity } from 'src/comments/comment.entity';
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TasksRepository } from './tasks.repository';
-import { CommentsService } from 'src/comments/comments.service';
-import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { CommentsService } from '../comments/comments.service';
+import { CreateCommentDto } from '../comments/dto/create-comment.dto';
 import { TaskResponseInterface } from './types/task-response.interface';
 
 @Injectable()

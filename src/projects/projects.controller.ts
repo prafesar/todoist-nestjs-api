@@ -15,16 +15,16 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
-import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { UserEntity } from 'src/users/user.entity';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CreateTaskDto } from '../tasks/dto/create-task.dto';
+import { GetUser } from '../common/decorators/get-user.decorator';
+import { UserEntity } from '../users/user.entity';
+import { Roles } from '../common/decorators/roles.decorator';
+import { UserRole } from '../common/enums/user-role.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ProjectResponseInterface } from './types/project-response.interface';
-import { TasksService } from 'src/tasks/tasks.service';
-import { TaskResponseInterface } from 'src/tasks/types/task-response.interface';
+import { TasksService } from '../tasks/tasks.service';
+import { TaskResponseInterface } from '../tasks/types/task-response.interface';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)

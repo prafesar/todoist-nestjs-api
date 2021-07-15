@@ -8,10 +8,10 @@ import {
   UnauthorizedException
 } from '@nestjs/common';
 
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 import { AuthService } from '../auth.service';
 import { USER_NOT_EXIST } from '../constants';
-import { UserEntity } from 'src/users/user.entity';
+import { UserEntity } from '../../users/user.entity';
 
 config()
 

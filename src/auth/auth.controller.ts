@@ -7,8 +7,8 @@ import {
   Get,
 } from '@nestjs/common';
 
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserResponseInterface } from 'src/users/types/user-response.interface';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserResponseInterface } from '../users/types/user-response.interface';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
