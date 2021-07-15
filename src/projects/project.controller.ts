@@ -74,9 +74,9 @@ export class ProjectController {
     @Param('id') projectId: string,
     @Body('userId') userId: string,
     @GetUser() currUser: UserEntity,
-  ): Promise<ProjectResponseInterface> {
-    const project = await this.projectsService.addUserInProject(projectId, userId, currUser);
-    return this.projectsService.buildProjectResponse(project)
+  ): Promise<void> {
+    return await this.projectsService.addUserInProject(projectId, userId, currUser);
+    // return this.projectsService.buildProjectResponse(project)
   }
 
   // admin
@@ -85,9 +85,8 @@ export class ProjectController {
     @Param('id') projectId: string,
     @Body('userId') userId: string,
     @GetUser() currUser: UserEntity,
-  ): Promise<ProjectResponseInterface> {
-    const project = await this.projectsService.removeUserFromProject(projectId, userId, currUser);
-    return this.projectsService.buildProjectResponse(project)
+  ): Promise<void> {
+    return await this.projectsService.removeUserFromProject(projectId, userId, currUser);
   }
 
   // admin

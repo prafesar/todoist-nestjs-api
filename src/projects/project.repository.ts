@@ -65,7 +65,7 @@ export class ProjectRepository extends Repository<ProjectEntity> {
     return this.preload(options);
   }
 
-  async addUserInProject(project: ProjectEntity, user: UserEntity): Promise<any> {
+  async addUserInProject(project: ProjectEntity, user: UserEntity): Promise<void> {
     
     return await this.createQueryBuilder('project')
       .relation('users')
@@ -73,7 +73,7 @@ export class ProjectRepository extends Repository<ProjectEntity> {
       .add(user);
   }
 
-  async removeUserFromProject(project: ProjectEntity, user: UserEntity): Promise<any> {
+  async removeUserFromProject(project: ProjectEntity, user: UserEntity): Promise<void> {
     
     return await this.createQueryBuilder('project')
       .relation('users')

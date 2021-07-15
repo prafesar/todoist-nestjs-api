@@ -70,7 +70,7 @@ export class ProjectService {
     return this.projectsRepository.saveProject(project);
   }
 
-  async addUserInProject(projectId: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
+  async addUserInProject(projectId: string, userId: string, currUser: UserEntity): Promise<void> {
     const project = await this.getProjectById(projectId, currUser)
     const user = await this.usersService.getUserById(userId);
     const userInProject = project.users.findIndex(user => user.id === userId) >= 0;
@@ -85,7 +85,7 @@ export class ProjectService {
     projectId: string,
     userId: string,
     currUser: UserEntity
-  ): Promise<ProjectEntity> {
+  ): Promise<void> {
 
     const project = await this.getProjectById(projectId, currUser)
     const user = await this.usersService.getUserById(userId);
