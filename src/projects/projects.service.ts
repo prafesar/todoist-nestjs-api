@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
@@ -32,8 +32,13 @@ export class ProjectsService {
     const project: ProjectEntity = await this.projectsRepository.findOne( id, {
       relations: ['author', 'users', 'tasks']
     });
+
+    if (!project) {
+      throw new NotFoundException('the project was not found');
+    }
     
     const userInProject = project.users.some(({ id }) => id === currUser.id)
+    
     if (!currUser.isAdmin() && userInProject) {
       throw new ForbiddenException('access is denied');
     }
