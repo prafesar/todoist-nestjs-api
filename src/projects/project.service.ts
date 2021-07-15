@@ -36,7 +36,7 @@ export class ProjectService {
     
     const userInProject = project.users.some(({ id }) => id === currUser.id)
     
-    if (!currUser.isAdmin() && userInProject) {
+    if (!currUser.isAdmin() && !userInProject) {
       throw new ForbiddenException('access is denied');
     }
 
