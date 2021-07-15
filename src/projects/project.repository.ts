@@ -5,6 +5,7 @@ import { ProjectStatus } from './project-status.enum';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UserEntity } from '../users/user.entity';
+import { NotFoundException } from '@nestjs/common';
 
 @EntityRepository(ProjectEntity)
 export class ProjectRepository extends Repository<ProjectEntity> {
@@ -47,6 +48,37 @@ export class ProjectRepository extends Repository<ProjectEntity> {
     return this.findOne( id, {
       relations: ['author', 'users', 'tasks']
     });
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    const result = await this.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Project with ID "${id}" not found`);
+    }
+  }
+
+  async saveProject(project: ProjectEntity): Promise<ProjectEntity> {
+    return this.save(project);
+  }
+
+  async preloadProject(options: object): Promise<ProjectEntity> {
+    return this.preload(options);
+  }
+
+  async addUserInProject(project: ProjectEntity, user: UserEntity): Promise<any> {
+    
+    return await this.createQueryBuilder('project')
+      .relation('users')
+      .of(project)
+      .add(user);
+  }
+
+  async removeUserFromProject(project: ProjectEntity, user: UserEntity): Promise<any> {
+    
+    return await this.createQueryBuilder('project')
+      .relation('users')
+      .of(project)
+      .remove(user);
   }
 
 }

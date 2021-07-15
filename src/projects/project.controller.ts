@@ -23,17 +23,12 @@ import { UserRole } from '../common/enums/user-role.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ProjectResponseInterface } from './types/project-response.interface';
-import { TasksService } from '../tasks/tasks.service';
-import { TaskResponseInterface } from '../tasks/types/task-response.interface';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 @Controller('projects')
 export class ProjectController {
-  constructor(
-    private projectsService: ProjectService,
-    private readonly tasksService: TasksService,
-  ) { }
+  constructor(private readonly projectsService: ProjectService) { }
 
   @Post()
   async createProject(
@@ -44,7 +39,6 @@ export class ProjectController {
     return this.projectsService.buildProjectResponse(project);
   }
 
-  // list of projects
   @Roles(UserRole.USER)
   @Get()
   getProjects(
@@ -69,12 +63,12 @@ export class ProjectController {
     @Param('id') id: string,
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() currUser: UserEntity,
-  ): Promise<TaskResponseInterface> {
-    const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser)
-    const task = await this.projectsService.addTaskInProject(project, currUser, createTaskDto);
-    return this.tasksService.buildTaskResponse(task);
+  ): Promise<ProjectResponseInterface> {
+    const result = await this.projectsService.addTaskInProject(id, currUser, createTaskDto)
+    return this.projectsService.buildProjectResponse(result);
   }
 
+  // admin
   @Post('/:id/users')
   async addUserInProject(
     @Param('id') projectId: string,
@@ -85,11 +79,24 @@ export class ProjectController {
     return this.projectsService.buildProjectResponse(project)
   }
 
+  // admin
+  @Delete('/:id/users')
+  async removeUserFromProject(
+    @Param('id') projectId: string,
+    @Body('userId') userId: string,
+    @GetUser() currUser: UserEntity,
+  ): Promise<ProjectResponseInterface> {
+    const project = await this.projectsService.removeUserFromProject(projectId, userId, currUser);
+    return this.projectsService.buildProjectResponse(project)
+  }
+
+  // admin
   @Delete('/:id')
   deleteProject(@Param('id') id: string): Promise<void> {
     return this.projectsService.deleteProject(id);
   }
 
+  // admin
   @Patch('/:id/status')
   updateProjectStatus(
     @Param('id') id: string,

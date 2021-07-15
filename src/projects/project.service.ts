@@ -1,6 +1,5 @@
-import { ForbiddenException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection } from 'typeorm';
 
 import { ProjectEntity } from './project.entity';
 import { UserEntity } from '../users/user.entity';
@@ -8,7 +7,6 @@ import { UsersService } from '../users/users.service';
 import { ProjectRepository } from './project.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
-import { TasksService } from '../tasks/tasks.service';
 import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { TaskEntity } from '../tasks/task.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
@@ -19,7 +17,6 @@ export class ProjectService {
   constructor(
     @InjectRepository(ProjectRepository)
     private projectsRepository: ProjectRepository,
-    private tasksService: TasksService,
     private usersService: UsersService,
   ) {}
 
@@ -48,52 +45,56 @@ export class ProjectService {
   }
 
   async addTaskInProject(
-    project: ProjectEntity,
-    user: UserEntity,
+    projectId: string,
+    currUser: UserEntity,
     createTaskDto: CreateTaskDto,
-  ): Promise<TaskEntity> {
-    return this.tasksService.createTask(project, user, createTaskDto);
+  ): Promise<ProjectEntity> {
+    const project = await this.getProjectById(projectId, currUser)
+    const task = Object.assign(new TaskEntity(), createTaskDto, { author: currUser})
+    project.tasks.push(task)
+    return this.projectsRepository.saveProject(project);
   }
 
   async deleteProject(id: string): Promise<void> {
-    const result = await this.projectsRepository.delete(id);
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Project with ID "${id}" not found`);
-    }
+    return await this.projectsRepository.deleteProject(id);
   }
 
-  async updateProjectStatus(id: string, updateProject: UpdateProjectStatusDto): Promise<ProjectEntity> {
-    const { status } = updateProject; 
-    const project = status && await this.projectsRepository.preload({
-      id,
-      status
-    })
+  async updateProjectStatus(id: string, { status }: UpdateProjectStatusDto): Promise<ProjectEntity> {
+    const options = { id, status }
+    const project = await this.projectsRepository.preloadProject(options)
+    
     if (!project) {
       throw new NotFoundException(`Project #${id} not found`);
     }
-    return this.projectsRepository.save(project);
+
+    return this.projectsRepository.saveProject(project);
   }
 
-  async addUserInProject(id: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
-    const newUser: UserEntity = await this.usersService.getUserById(userId);
-    const project: ProjectEntity = await this.getProjectById(id, currUser);
+  async addUserInProject(projectId: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
+    const project = await this.getProjectById(projectId, currUser)
+    const user = await this.usersService.getUserById(userId);
+    const userInProject = project.users.findIndex(user => user.id === userId) >= 0;
     
-    const usersInProject = await project.users;
-    const userInProject: boolean = usersInProject.findIndex(user => user.id === userId) >= 0;
     if (userInProject) {
-      console.log((`User #${userId} already in project`));
-      return;
+      throw new BadRequestException(`User #${userId} already in project`)
     }
-    
-    // add newUser
-    await getConnection()
-    .createQueryBuilder()
-    .relation(ProjectEntity, "users")
-    .of(project)
-    .add(newUser);
+    return await this.projectsRepository.addUserInProject(project, user);
+  }
 
-    return await this.getProjectById(id, currUser);
+  async removeUserFromProject(
+    projectId: string,
+    userId: string,
+    currUser: UserEntity
+  ): Promise<ProjectEntity> {
+
+    const project = await this.getProjectById(projectId, currUser)
+    const user = await this.usersService.getUserById(userId);
+    const userInProject = project.users.findIndex(user => user.id === userId) >= 0;
+    
+    if (!userInProject) {
+      throw new BadRequestException(`User #${userId} dont exist in project`)
+    }
+    return await this.projectsRepository.removeUserFromProject(project, user);
   }
 
   buildProjectResponse(project: ProjectEntity): ProjectResponseInterface {

@@ -7,14 +7,10 @@ import { UsersModule } from '../users/users.module';
 import { ProjectController } from './project.controller';
 import { ProjectRepository } from './project.repository';
 import { ProjectService } from './project.service';
-import { TasksModule } from '../tasks/tasks.module';
-import { TaskEntity } from '../tasks/task.entity';
-import { CommentEntity } from '../comments/comment.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProjectRepository, CommentEntity, TaskEntity]),
-    TasksModule,
+    TypeOrmModule.forFeature([ProjectRepository]),
     AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     UsersModule,
