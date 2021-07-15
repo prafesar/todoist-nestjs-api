@@ -4,23 +4,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
-import { ProjectsController } from './projects.controller';
-import { ProjectsRepository } from './projects.repository';
-import { ProjectsService } from './projects.service';
+import { ProjectController } from './project.controller';
+import { ProjectRepository } from './project.repository';
+import { ProjectService } from './project.service';
 import { TasksModule } from '../tasks/tasks.module';
 import { TaskEntity } from '../tasks/task.entity';
 import { CommentEntity } from '../comments/comment.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProjectsRepository, CommentEntity, TaskEntity]),
+    TypeOrmModule.forFeature([ProjectRepository, CommentEntity, TaskEntity]),
     TasksModule,
     AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     UsersModule,
   ],
-  controllers: [ProjectsController],
-  providers: [ProjectsService],
-  exports: [ProjectsService],
+  controllers: [ProjectController],
+  providers: [ProjectService],
+  exports: [ProjectService],
 })
-export class ProjectsModule {}
+export class ProjectModule {}

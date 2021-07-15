@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { ProjectEntity } from './project.entity';
-import { ProjectsService } from './projects.service';
+import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
@@ -29,11 +29,11 @@ import { TaskResponseInterface } from '../tasks/types/task-response.interface';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 @Controller('projects')
-export class ProjectsController {
+export class ProjectController {
   constructor(
-    private projectsService: ProjectsService,
+    private projectsService: ProjectService,
     private readonly tasksService: TasksService,
-  ) {}
+  ) { }
 
   @Post()
   async createProject(
@@ -62,7 +62,7 @@ export class ProjectsController {
     const project = await this.projectsService.getProjectById(id, currUser);
     return this.projectsService.buildProjectResponse(project)
   }
-  
+
   @Roles(UserRole.USER)
   @Post('/:id/tasks')
   async addTaskInProject(

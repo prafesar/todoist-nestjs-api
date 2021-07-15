@@ -6,7 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { configValidationSchema } from './config.schema';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ProjectsModule } from './projects/projects.module';
+import { ProjectModule } from './projects/project.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CommentsModule } from './comments/comments.module';
 import { NotifyModule } from './notify/notify.module';
@@ -33,7 +33,7 @@ import { NotifyModule } from './notify/notify.module';
     PassportModule,
     UsersModule,
     AuthModule,
-    ProjectsModule,
+    ProjectModule,
     TasksModule,
     CommentsModule,
     NotifyModule

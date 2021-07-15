@@ -5,7 +5,7 @@ import { getConnection } from 'typeorm';
 import { ProjectEntity } from './project.entity';
 import { UserEntity } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import { ProjectsRepository } from './projects.repository';
+import { ProjectRepository } from './project.repository';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { TasksService } from '../tasks/tasks.service';
@@ -15,10 +15,10 @@ import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { ProjectResponseInterface } from './types/project-response.interface';
 
 @Injectable()
-export class ProjectsService {
+export class ProjectService {
   constructor(
-    @InjectRepository(ProjectsRepository)
-    private projectsRepository: ProjectsRepository,
+    @InjectRepository(ProjectRepository)
+    private projectsRepository: ProjectRepository,
     private tasksService: TasksService,
     private usersService: UsersService,
   ) {}

@@ -7,7 +7,7 @@ import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UserEntity } from '../users/user.entity';
 
 @EntityRepository(ProjectEntity)
-export class ProjectsRepository extends Repository<ProjectEntity> {
+export class ProjectRepository extends Repository<ProjectEntity> {
   // view list of projects
   async getProjects(
     filterDto: GetProjectsFilterDto
