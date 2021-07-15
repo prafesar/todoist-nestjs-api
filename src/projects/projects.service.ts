@@ -28,10 +28,8 @@ export class ProjectsService {
     return this.projectsRepository.getProjects(filterDto);
   }
 
-  async findOne(id: string, currUser: UserEntity): Promise<ProjectEntity> {
-    const project: ProjectEntity = await this.projectsRepository.findOne( id, {
-      relations: ['author', 'users', 'tasks']
-    });
+  async getProjectById(id: string, currUser: UserEntity): Promise<ProjectEntity> {
+    const project = await this.projectsRepository.getProjectById(id)
 
     if (!project) {
       throw new NotFoundException('the project was not found');
@@ -80,7 +78,7 @@ export class ProjectsService {
 
   async addUserInProject(id: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
     const newUser: UserEntity = await this.usersService.getUserById(userId);
-    const project: ProjectEntity = await this.findOne(id, currUser);
+    const project: ProjectEntity = await this.getProjectById(id, currUser);
     
     const usersInProject = await project.users;
     const userInProject: boolean = usersInProject.findIndex(user => user.id === userId) >= 0;
@@ -96,7 +94,7 @@ export class ProjectsService {
     .of(project)
     .add(newUser);
 
-    return await this.findOne(id, currUser);
+    return await this.getProjectById(id, currUser);
   }
 
   buildProjectResponse(project: ProjectEntity): ProjectResponseInterface {
@@ -105,9 +103,9 @@ export class ProjectsService {
       project: {
         ...rest,
         authorId: author.id,
-        users: users.map(({ id }) => id),
-        tasks: tasks.map(({ id }) => id),
       },
+      users: users.map(({ id }) => id),
+      tasks: tasks.map(({ id }) => id),
     };
   }
 }

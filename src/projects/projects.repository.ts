@@ -43,4 +43,10 @@ export class ProjectsRepository extends Repository<ProjectEntity> {
     return await this.save(project);
   }
 
+  async getProjectById( id: string ): Promise<ProjectEntity> {
+    return this.findOne( id, {
+      relations: ['author', 'users', 'tasks']
+    });
+  }
+
 }

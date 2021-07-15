@@ -53,14 +53,13 @@ export class ProjectsController {
     return this.projectsService.getProjects(filterDto);
   }
 
-  // only if user admin or current user in project
   @Roles(UserRole.USER)
   @Get('/:id')
   async getProjectById(
     @Param('id') id: string,
     @GetUser() currUser: UserEntity,
   ): Promise<ProjectResponseInterface> {
-    const project: ProjectEntity = await this.projectsService.findOne(id, currUser);
+    const project = await this.projectsService.getProjectById(id, currUser);
     return this.projectsService.buildProjectResponse(project)
   }
   
@@ -71,7 +70,7 @@ export class ProjectsController {
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() currUser: UserEntity,
   ): Promise<TaskResponseInterface> {
-    const project: ProjectEntity = await this.projectsService.findOne(id, currUser)
+    const project: ProjectEntity = await this.projectsService.getProjectById(id, currUser)
     const task = await this.projectsService.addTaskInProject(project, currUser, createTaskDto);
     return this.tasksService.buildTaskResponse(task);
   }
