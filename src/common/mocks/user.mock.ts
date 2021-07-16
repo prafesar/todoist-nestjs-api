@@ -9,18 +9,11 @@ const userDto: CreateUserDto = {
 };
 
 const mockUser: UserEntity = Object.assign(
-  new UserEntity(),
-  userDto,
-  {
-    role: UserRole.USER,
-    id: 'someId',
-  },
+  new UserEntity(), userDto, { role: UserRole.USER }
 );
 
 const mockAdmin: UserEntity = Object.assign(
-  new UserEntity(),
-  mockUser,
-  { role: UserRole.ADMIN },
+  new UserEntity(), userDto, { role: UserRole.ADMIN },
 );
 
 const mockUsersService = () => ({});

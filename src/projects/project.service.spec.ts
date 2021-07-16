@@ -1,45 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
-import { ProjectRepository } from './project.repository';
-import { ProjectService } from './project.service';
 import { TasksService } from '../tasks/tasks.service';
-import { UserRole } from '../common/enums/user-role.enum';
-import { UserEntity } from '../users/user.entity';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { ProjectStatus } from './project-status.enum';
-import { ProjectEntity } from './project.entity';
-
-const mockProjectRepository = () => ({
-  getProjectById: jest.fn(),
-});
-
-const mockTasksService = () => ({});
-const mockUsersService = () => ({});
-
-
-const userData = {
-  id: 'userId',
-  email: 'federal@fsb.ru',
-  login: 'federal',
-  password: 'password',
-};
-
-const mockUser = Object.assign(new UserEntity(), userData);
-mockUser.role = UserRole.USER;
-
-const mockAdmin = Object.assign(new UserEntity(), userData);
-mockAdmin.role = UserRole.ADMIN;
-
-const projectData = {
-  id: 'projectId',
-  title: 'My Test Project',
-  status: ProjectStatus.OPEN,
-  users: [],
-};
-
-const mockProjectEmptyUsers = Object.assign(new ProjectEntity(), projectData);
-const mockProject = Object.assign(mockProjectEmptyUsers, { users: [ mockUser ]});
+import { mockTasksService } from '../common/mocks/task.mock';
+import { mockAdmin, mockUser, mockUsersService } from '../common/mocks/user.mock';
+import { ProjectService } from './project.service';
+import { ProjectRepository } from './project.repository';
+import {
+  mockProjectEmptyUsers,
+  mockProject,
+  mockProjectRepository
+} from '../common/mocks/project.mock';
 
 describe('ProjectService', () => {
   let projectService: ProjectService;
@@ -48,7 +20,7 @@ describe('ProjectService', () => {
   let usersService: UsersService;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectService,
         { provide: ProjectRepository, useFactory: mockProjectRepository },
@@ -70,7 +42,7 @@ describe('ProjectService', () => {
 
   describe('getProjectById', () => {
     it('user in project, return the result', async () => {
-      projectRepository.getProjectById.mockResolvedValue(mockProject);
+      projectRepository.getProjectById.mockImplementation(() => mockProject)
       const result = await projectService.getProjectById(null, mockUser)
       expect(result).toEqual(mockProject);
     });

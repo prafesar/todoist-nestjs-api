@@ -9,21 +9,17 @@ const projectDto: CreateProjectDto = {
 const mockProjectEmptyUsers = Object.assign(
   new ProjectEntity(),
   projectDto,
-  {
-    id: 'someId',
-    users: []
-  }
 );
 const mockProject = Object.assign(mockProjectEmptyUsers, { users: [ mockUser ]});
 
 const mockProjectRepository = () => ({
-  getProjectById: jest.fn(() => 'result'),
+  getProjectById: jest.fn(),
 });
 
 const mockProjectService = {
   getProjects: jest.fn(),
   createProject: jest.fn(),
-  getProjectById: jest.fn(() => mockProject),
+  getProjectById: jest.fn(),
   addTaskInProject: jest.fn(),
   deleteProject: jest.fn(),
   updateProjectStatus: jest.fn(),
