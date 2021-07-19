@@ -1,12 +1,4 @@
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+## Run PostgreSQL on Docker
+`docker run --name todoist -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres`
+### Run test Database
+`docker run --name test_todoist -p 5435:5435 -e POSTGRES_PASSWORD=postgres -d postgres`
