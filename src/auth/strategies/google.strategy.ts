@@ -39,7 +39,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     }
     const { emails } = profile;
     const email = emails[0].value;
-    const user: UserEntity = await this.usersService.getUserByEmail(email);
+    const user: UserEntity = await this.usersService.getUserWithPassByEmail(email);
     
     if (!user) {
       done(new UnauthorizedException(USER_NOT_EXIST), null);

@@ -1,6 +1,5 @@
-import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 import { UserEntity } from './user.entity';
 import { UserRole } from '../common/enums/user-role.enum';
@@ -9,12 +8,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 @EntityRepository(UserEntity)
 export class UsersRepository extends Repository<UserEntity> {
   
-  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const role = await this.isFirstUser() ? UserRole.ADMIN : UserRole.USER;
-    const user = this.create({ ...createUserDto, role });
-    
+  async createUser(createDto: CreateUserDto & { role: UserRole}): Promise<UserEntity> {
+    const user = this.create(createDto)
     try {
-      await this.save(user);
+      await this.saveUser(user);
     } catch (error) {
       if (error.code === '23505') {
         // duplicate username
@@ -23,7 +20,6 @@ export class UsersRepository extends Repository<UserEntity> {
         throw new InternalServerErrorException();
       }
     }
-    delete user.password;
     return user;
   }
 
@@ -38,5 +34,26 @@ export class UsersRepository extends Repository<UserEntity> {
 
   async getUsers(): Promise<UserEntity[]> {
     return await this.find()
+  }
+
+  async saveUser(user: UserEntity): Promise<UserEntity> {
+    return this.save(user);
+  }
+
+  async deleteUser(userId: string): Promise<any> {
+    return await this.delete(userId);
+  }
+
+  async countUsersWihtRole(role: UserRole): Promise<number> {
+    const [ , count] = await this.findAndCount({
+      where: [
+        { role },
+      ]
+    });
+    return count;
+  }
+
+  async findUser(...options: object[]): Promise<UserEntity> {
+    return await this.findOne(...options)
   }
 }

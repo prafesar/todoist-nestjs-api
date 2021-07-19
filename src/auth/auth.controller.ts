@@ -6,6 +6,8 @@ import {
   Req,
   Get,
 } from '@nestjs/common';
+import { UserEntity } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserResponseInterface } from '../users/types/user-response.interface';
@@ -16,11 +18,12 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
   
   @Post('/register')
   async register(@Body('user') dto: CreateUserDto): Promise<UserResponseInterface> {
-    return await this.authService.register(dto);
+    const newUser: UserEntity = await this.authService.register(dto);
+    return this.authService.buildUserResponse(newUser, 'local', ''); 
   }
 
   @UseGuards(LocalAuthGuard)

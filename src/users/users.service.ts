@@ -5,6 +5,7 @@ import { UserEntity } from '../users/user.entity';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRoleDto } from './dto/user-role.dto';
+import { UserRole } from '../common/enums/user-role.enum';
 
 @Injectable()
 export class UsersService {
@@ -14,26 +15,30 @@ export class UsersService {
   ) {}
     
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    return this.usersRepository.createUser(createUserDto);
+    const role = await this.isFirstUser() ? UserRole.ADMIN : UserRole.USER;
+    const user = await this.usersRepository.createUser({ ...createUserDto, role });
+    delete user.password;
+    return user;
   }
 
   async getAllUsers(): Promise<UserEntity[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.getUsers();
   }
 
   async getUserById(id: string): Promise<UserEntity> {
-    const found = await this.usersRepository.findOne(id);
+    const found = await this.usersRepository.findUser({ id });
     if (!found) {
       throw new NotFoundException(`User with ID: ${id} not found`);
     }
     return found;
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity> {
-    const found = await this.usersRepository.findOne(
+  async getUserWithPassByEmail(email: string): Promise<UserEntity> {
+    const options = [
       { email },
-      { select: ['id', 'login', 'email', 'role', 'password'] },
-    );
+      { select: ['id', 'login', 'email', 'role', 'password'] }
+    ]
+    const found = await this.usersRepository.findUser(...options);
     if (!found) {
       throw new NotFoundException(`User with email: ${email} not found`);
     }
@@ -41,26 +46,29 @@ export class UsersService {
   }
 
   async getUserByLogin(login: string): Promise<UserEntity> {
-    const found = await this.usersRepository.findOne({ login });
+    const found = await this.usersRepository.findUser({ login });
     if (!found) {
       throw new NotFoundException(`User with login: ${login} not found`);
     }
     return found;
   }
 
-  async deleteUser(id: string): Promise<void> {
-    const result = await this.usersRepository.delete(id);
-
+  async deleteUser(id: string): Promise<object> {
+    const result = await this.usersRepository.deleteUser(id);
     if (result.affected === 0) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
+    return {}
   }
 
   async updateUserRole(id: string, userRole: UserRoleDto): Promise<UserEntity> {
     const user = await this.getUserById(id);
     user.role = userRole.role;
-    await this.usersRepository.save(user);
-    return user;
-  } 
+    return await this.usersRepository.saveUser(user);
+  }
+
+  async isFirstUser(): Promise<boolean> {
+    return !Boolean(await this.usersRepository.countUsersWihtRole(UserRole.ADMIN))
+  }
 
 }

@@ -17,42 +17,35 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<UserResponseInterface> {
-    const user: UserEntity = await this.usersService.createUser(createUserDto);
-    return this.buildUserResponse(user, 'local', '')
+  async register(createUserDto: CreateUserDto): Promise<UserEntity> {
+    return await this.usersService.createUser(createUserDto);
   }
 
   async login(
     dto: AuthCredentialsDto,
   ): Promise<UserResponseInterface> {
-    const user: UserEntity = await this.getAuthenticatedUser(dto);
+    const user = await this.getAuthenticatedUser(dto);
     const token = this.generateJwt(user);
     // respons for frontend
     return this.buildUserResponse(user, 'jwt', token);
   }
 
   async getAuthenticatedUser({ email, password }: AuthCredentialsDto): Promise<UserEntity> {
-    const user = await this.usersService.getUserByEmail(email);
-
-    if (!user) {
-      throw new UnauthorizedException(USER_NOT_EXIST);
-    }
-    
-    this.verifyPassword(password, user.password);
+    const user = await this.usersService.getUserWithPassByEmail(email);
+    await this.verifyPassword(password, user.password);
     delete user.password;
     return user;
   }
 
   async verifyPassword(plainTextPassword: string, hashedPassword: string): Promise<boolean> {
-    const isPasswordMatching: boolean = await compare(
+    const isPasswordMatching = await compare(
       plainTextPassword,
       hashedPassword
     );
     if (!isPasswordMatching) {
       throw new UnauthorizedException(WRONG_PASSWORD);
     }
-    console.log('pass is ok')
-    return isPasswordMatching; 
+    return isPasswordMatching;
   }
 
   generateJwt(user: UserEntity): string {
