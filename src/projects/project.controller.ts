@@ -23,6 +23,7 @@ import { UserRole } from '../common/enums/user-role.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ProjectResponseInterface } from './types/project-response.interface';
+import { ProjectListResponseInterfase } from './types/project-list-response.interface';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -41,10 +42,11 @@ export class ProjectController {
 
   @Roles(UserRole.USER)
   @Get()
-  getProjects(
+  async getProjects(
     @Query() filterDto: GetProjectsFilterDto = {},
-  ): Promise<ProjectEntity[]> {
-    return this.projectsService.getProjects(filterDto);
+  ): Promise<ProjectListResponseInterfase> {
+    const projects = await this.projectsService.getProjects(filterDto);
+    return this.projectsService.buildProjectListResponse(projects)
   }
 
   @Roles(UserRole.USER)

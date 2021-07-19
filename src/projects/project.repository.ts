@@ -28,7 +28,7 @@ export class ProjectRepository extends Repository<ProjectEntity> {
     }
 
     const projects = await query.getMany();
-    return projects;
+    return projects ? projects : [];
   }
 
   async createProject(

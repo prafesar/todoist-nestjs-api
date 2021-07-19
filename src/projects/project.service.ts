@@ -11,6 +11,7 @@ import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { TaskEntity } from '../tasks/task.entity';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
 import { ProjectResponseInterface } from './types/project-response.interface';
+import { ProjectListResponseInterfase } from './types/project-list-response.interface';
 
 @Injectable()
 export class ProjectService {
@@ -107,5 +108,12 @@ export class ProjectService {
       users: users.map(({ id }) => id),
       tasks: tasks.map(({ id }) => id),
     };
+  }
+
+  buildProjectListResponse(projects: ProjectEntity[]): ProjectListResponseInterfase {
+    const result = projects.map(project => this.buildProjectResponse(project));
+    return {
+      projects: result,
+    }
   }
 }
