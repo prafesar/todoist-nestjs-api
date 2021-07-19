@@ -4,6 +4,7 @@ import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
 import { mockUser } from '../common/mocks/user.mock';
 import { mockProjectService} from '../common/mocks/project.mock';
+import { ProjectStatus } from './project-status.enum';
 
 describe('ProjectService', () => {
   let spyService: ProjectService;
@@ -23,9 +24,19 @@ describe('ProjectService', () => {
 
   });
 
-  it('call Service.getProjctById and return result', async () => {
+  it('call Service.getProjctById', async () => {
     controller.getProjectById('someId', mockUser);
     expect(spyService.getProjectById).toHaveBeenCalledWith('someId', mockUser);
+  });
+
+  it('call Service.getProjcts without params', async () => {
+    controller.getProjects();
+    expect(spyService.getProjects).toHaveBeenCalled();
+  });
+
+  it('call Service.getProjcts with params', async () => {
+    controller.getProjects({ status: ProjectStatus.OPEN, search: 'asdf'});
+    expect(spyService.getProjects).toHaveBeenCalledWith({ status: ProjectStatus.OPEN, search: 'asdf'});
   });
 
 });

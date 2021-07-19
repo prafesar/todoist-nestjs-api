@@ -42,7 +42,7 @@ export class ProjectController {
   @Roles(UserRole.USER)
   @Get()
   getProjects(
-    @Query() filterDto: GetProjectsFilterDto,
+    @Query() filterDto: GetProjectsFilterDto = {},
   ): Promise<ProjectEntity[]> {
     return this.projectsService.getProjects(filterDto);
   }

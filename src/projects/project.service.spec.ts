@@ -40,7 +40,7 @@ describe('ProjectService', () => {
     expect(projectService).toBeDefined();
   });
 
-  describe('getProjectById', () => {
+  describe('ProjectService.getProjectById', () => {
     it('user in project, return the result', async () => {
       projectRepository.getProjectById.mockImplementation(() => mockProject)
       const result = await projectService.getProjectById(null, mockUser)
@@ -55,13 +55,15 @@ describe('ProjectService', () => {
 
     it('not found project, handle error', async () => {
       projectRepository.getProjectById.mockResolvedValue(null);
-      expect(projectService.getProjectById('projectId', mockUser)).rejects.toThrow(NotFoundException);
+      expect(projectService.getProjectById('projectId', mockUser))
+        .rejects.toThrow(NotFoundException);
     });
 
     it('user dont exist in project, handle Error', async () => {
       projectRepository.getProjectById.mockResolvedValue(mockProjectEmptyUsers);
-      expect(projectService.getProjectById('projectId', mockUser)).rejects.toThrow(ForbiddenException);
+      expect(projectService.getProjectById('projectId', mockUser))
+        .rejects.toThrow(ForbiddenException);
     });
-
   })
+
 });

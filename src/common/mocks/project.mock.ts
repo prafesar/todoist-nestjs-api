@@ -14,6 +14,7 @@ const mockProject = Object.assign(mockProjectEmptyUsers, { users: [ mockUser ]})
 
 const mockProjectRepository = () => ({
   getProjectById: jest.fn(),
+  getProjects: jest.fn(),
 });
 
 const mockProjectService = {

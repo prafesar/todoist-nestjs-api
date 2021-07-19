@@ -20,7 +20,7 @@ export class ProjectService {
     private usersService: UsersService,
   ) {}
 
-  getProjects(filterDto: GetProjectsFilterDto): Promise<ProjectEntity[]> {
+  getProjects(filterDto: GetProjectsFilterDto = {}): Promise<ProjectEntity[]> {
     return this.projectsRepository.getProjects(filterDto);
   }
 
