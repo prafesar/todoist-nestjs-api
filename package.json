@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "env STAGE=dev nest start --watch",
+    "start:test": "env STAGE=test nest start --watch",
     "start:debug": "env STAGE=dev nest start --debug --watch",
     "start:prod": "env STAGE=prod node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -18,7 +19,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "env STAGE=test jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
