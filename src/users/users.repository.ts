@@ -56,4 +56,8 @@ export class UsersRepository extends Repository<UserEntity> {
   async findUser(...options: object[]): Promise<UserEntity> {
     return await this.findOne(...options)
   }
+
+  async findUserById(id: string): Promise<UserEntity> {
+    return await this.findOne(id)
+  }
 }

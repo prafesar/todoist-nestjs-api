@@ -20,7 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     const dto: AuthCredentialsDto = { email, password };
     const user = await this.authService.getAuthenticatedUser(dto);
     // wright in req.user
-    const userResponse = this.authService.buildUserResponse(user, 'local', '');
+    const userResponse = this.authService.buildAuthUserResponse(user, 'local', '');
     done(null, userResponse.user);
   }
 }

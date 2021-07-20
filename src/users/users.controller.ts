@@ -6,15 +6,17 @@ import {
   Body,
   Param,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 
-import { UserEntity } from './user.entity';
 import { UsersService } from './users.service';
 import { UserRoleDto } from './dto/user-role.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserResponseInterface } from './types/user-response.interface';
+import { UserListResponseInterface } from './types/user-list-response.interface';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -23,16 +25,19 @@ export class UsersController {
   constructor( private usersService: UsersService) {}
   
   @Get()
-  getAllUsers(): Promise<UserEntity[]> {
-    return this.usersService.getAllUsers();
+  async getAllUsers(): Promise<UserListResponseInterface> {
+    const users = await this.usersService.getAllUsers();
+    return this.usersService.buildUserListResponse(users);
   }
 
   @Roles(UserRole.USER)
   @Get('/:id')
-  getUserById(@Param('id') id: string): Promise<UserEntity> {
-    return this.usersService.getUserById(id);
+  async getUserById(@Param('id') id: string): Promise<UserResponseInterface> {
+    const user = await this.usersService.getUserById(id);
+    return this.usersService.buildUserResponse(user);
   }
   
+  @HttpCode(204)
   @Delete('/:id')
   deleteUser(@Param('id') id: string): Promise<object> {
     return this.usersService.deleteUser(id);
@@ -42,8 +47,9 @@ export class UsersController {
   async updateUserRole(
     @Param('id') id: string,
     @Body() userRoleDto: UserRoleDto,
-  ): Promise<UserEntity> {
-    return this.usersService.updateUserRole(id, userRoleDto);
+  ): Promise<UserResponseInterface> {
+    const updatedUser = await this.usersService.updateUserRole(id, userRoleDto);
+    return this.usersService.buildUserResponse(updatedUser)
   }
   
 }

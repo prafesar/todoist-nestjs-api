@@ -6,6 +6,8 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRoleDto } from './dto/user-role.dto';
 import { UserRole } from '../common/enums/user-role.enum';
+import { UserResponseInterface } from './types/user-response.interface';
+import { UserListResponseInterface } from './types/user-list-response.interface';
 
 @Injectable()
 export class UsersService {
@@ -26,7 +28,7 @@ export class UsersService {
   }
 
   async getUserById(id: string): Promise<UserEntity> {
-    const found = await this.usersRepository.findUser({ id });
+    const found = await this.usersRepository.findUserById(id);
     if (!found) {
       throw new NotFoundException(`User with ID: ${id} not found`);
     }
@@ -69,6 +71,22 @@ export class UsersService {
 
   async isFirstUser(): Promise<boolean> {
     return !Boolean(await this.usersRepository.countUsersWihtRole(UserRole.ADMIN))
+  }
+
+  buildUserResponse(user: UserEntity): UserResponseInterface {
+    return {
+      user: {
+        ...user,
+      },
+    };
+  }
+
+  buildUserListResponse(users: UserEntity[]): UserListResponseInterface {
+    return {
+      users: {
+        ...users,
+      },
+    };
   }
 
 }
