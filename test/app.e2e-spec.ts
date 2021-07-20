@@ -2,11 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { UserRole } from '../src/common/enums/user-role.enum';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  let jwtToken: string;
+  let adminJwtToken: string;
+  let adminId: string;
+  let userJwtToken: string;
   let userId: string;
   let server;
 
@@ -23,7 +26,7 @@ describe('AppController (e2e)', () => {
   describe('AuthModule', () => {
     
     
-    it('/auth/register (POST) with valid credentials', async () => {
+    it('/auth/register (POST) create first user (ADMIN)', async () => {
       const response = await request(server)
         .post('/auth/register')
         .send({
@@ -35,19 +38,51 @@ describe('AppController (e2e)', () => {
         })
         .expect(201)
     
-    userId = response.body.user.id;
-    expect(response.body.user.email).toBe('test@example.com');
+    const { id, role, email } = response.body.user;
+    adminId = id;
+    expect(role).toBe(UserRole.ADMIN)
+    expect(email).toBe('test@example.com');
     })
 
-    it('/auth/login (POST) - succes and provides a jwt token', async (done) => {
+    it('/auth/register (POST) create other user with role User', async () => {
+      const response = await request(server)
+        .post('/auth/register')
+        .send({
+          user: {
+            email: 'user@example.com',
+            password: '1234',
+            login: 'user2',
+          }
+        })
+        .expect(201)
+    
+    const { id, role, email } = response.body.user;
+    userId = id;
+    expect(role).toBe(UserRole.USER)
+    expect(email).toBe('user@example.com');
+    })
+
+    it('/auth/login (POST) - succes auth Admin and provides a jwt token', async (done) => {
       const response = await request(server)
         .post('/auth/login')
         .send({ email: 'test@example.com', password: 'password' })
         .expect(201)
       // set jwt token for use in subsequent tests
-      jwtToken = response.body.user.token;
-      userId = response.body.user.id;
-      expect(response.body.user.token).toMatch(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/) // jwt regex
+      const { token } = response.body.user;
+      adminJwtToken = token;
+      expect(token).toMatch(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/) // jwt regex
+      done()
+    })
+
+    it('/auth/login (POST) - succes auth User and provides a jwt token', async (done) => {
+      const response = await request(server)
+        .post('/auth/login')
+        .send({ email: 'user@example.com', password: '1234' })
+        .expect(201)
+      // set jwt token for use in subsequent tests
+      const { token } = response.body.user;
+      userJwtToken = token;
+      expect(token).toMatch(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/) // jwt regex
       done()
     })
 
@@ -62,33 +97,41 @@ describe('AppController (e2e)', () => {
 
   })
 
-  // describe('ProjectModule', () => {
+  describe('ProjectModule', () => {
     
-  //   it('/projects (GET) - no any projects', async (done) => {
-  //     const response = await request(app.getHttpServer())
-  //       .get('/projects')
-  //       .set('Authorization', `Bearer ${jwtToken}`)
-  //       .expect(404)
-  //       // .then(({ body }: request.Response) => {
-  //       //   expect(body).not.toBeDefined();
-  //       //   done()
-  //       // });
-  //     expect(response.body.projects.length).toBe(0);
-  //     done()
-  //   });
+    it('/projects (GET) - no any projects', async (done) => {
+      const response = await request(app.getHttpServer())
+        .get('/projects')
+        .set('Authorization', `Bearer ${userJwtToken}`)
+        .expect(200);
+      
+      expect(response.body.projects.length).toBe(0);
+      done()
+    });
     
-  // })
+  })
 
-  // describe('UserModule', () => {
-  //   it('/users/:userId (DELETE) - unsucces', async () => {
-  //     const response = await request(app.getHttpServer())
-  //       .post(`/users/${userId}`)
-  //       .set('Authorization', `Bearer ${jwtToken}`)
-  //       .expect(204)
+  describe('UserModule', () => {
+    it('/users/:userId (GET) - succes', async () => {
+      await request(app.getHttpServer())
+        .get(`/users/${adminId}`)
+        .set('Authorization', `Bearer ${adminJwtToken}`)
+        .expect(200)
+        .then(({ body }) => {
+          const { user: { email } } = body;
+          expect(email).toBe('test@example.com');
+        });
+    });
 
-  //     expect(response.body).toEqual({})
-  //   })
-  // });
+    it('/users/:userId (DELETE) - succes', async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`/users/${adminId}`)
+        .set('Authorization', `Bearer ${adminJwtToken}`)
+        .expect(204)
+
+      expect(response.body).toEqual({})
+    })
+  });
 
   afterAll(async () => {
     await Promise.all([
