@@ -10,7 +10,7 @@ import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UserResponseInterface } from '../users/types/user-response.interface';
+import { UserAuthResponseInterface } from '../users/types/user-auth-response.interface';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
@@ -21,14 +21,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   
   @Post('/register')
-  async register(@Body('user') dto: CreateUserDto): Promise<UserResponseInterface> {
+  async register(@Body('user') dto: CreateUserDto): Promise<UserAuthResponseInterface> {
     const newUser: UserEntity = await this.authService.register(dto);
-    return this.authService.buildUserResponse(newUser, 'local', ''); 
+    return this.authService.buildAuthUserResponse(newUser, 'local', ''); 
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@Body() dto: AuthCredentialsDto): Promise<UserResponseInterface> {
+  login(@Body() dto: AuthCredentialsDto): Promise<UserAuthResponseInterface> {
     return this.authService.login(dto);
   }
   

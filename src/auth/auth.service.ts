@@ -8,7 +8,7 @@ import { UsersService } from '../users/users.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { USER_NOT_EXIST, WRONG_PASSWORD } from './constants';
-import { UserResponseInterface } from '../users/types/user-response.interface';
+import { UserAuthResponseInterface } from '../users/types/user-auth-response.interface';
 
 @Injectable()
 export class AuthService {
@@ -23,11 +23,11 @@ export class AuthService {
 
   async login(
     dto: AuthCredentialsDto,
-  ): Promise<UserResponseInterface> {
+  ): Promise<UserAuthResponseInterface> {
     const user = await this.getAuthenticatedUser(dto);
     const token = this.generateJwt(user);
     // respons for frontend
-    return this.buildUserResponse(user, 'jwt', token);
+    return this.buildAuthUserResponse(user, 'jwt', token);
   }
 
   async getAuthenticatedUser({ email, password }: AuthCredentialsDto): Promise<UserEntity> {
@@ -60,7 +60,7 @@ export class AuthService {
     );
   }
 
-  buildUserResponse(user: UserEntity, strategy: string, token: string): UserResponseInterface {
+  buildAuthUserResponse(user: UserEntity, strategy: string, token: string): UserAuthResponseInterface {
     return {
       user: {
         ...user,
