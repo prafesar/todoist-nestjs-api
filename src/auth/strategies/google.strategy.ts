@@ -45,7 +45,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       done(new UnauthorizedException(USER_NOT_EXIST), null);
     }
     // wright in req.user
-    const userResponse = this.authService.buildUserResponse(user, 'google', accessToken);
+    const userResponse = this.authService.buildAuthUserResponse(user, 'google', accessToken);
     done(null, userResponse.user);
   }
 }
