@@ -108,6 +108,12 @@ describe('AppController (e2e)', () => {
       expect(response.body.projects.length).toBe(0);
       done()
     });
+
+    it.todo('/projects (POST) - create project by User -- unsuccess');
+    it.todo('/projects (POST) - create project by Admin -- success');
+    it.todo('/projects (GEY) - get list of projects -- success');
+    it.todo('/projects/:projectId (GET) - get project by Id -- unsuccess');
+
     
   })
 
@@ -123,6 +129,9 @@ describe('AppController (e2e)', () => {
         });
     });
 
+  });
+
+  describe('Delete Test', () => {
     it('/users/:userId (DELETE) - succes', async () => {
       const response = await request(app.getHttpServer())
         .delete(`/users/${adminId}`)
@@ -131,7 +140,11 @@ describe('AppController (e2e)', () => {
 
       expect(response.body).toEqual({})
     })
-  });
+
+    it.todo('/projects/:projectId (DELETE) - delete project by User -- unsuccess');
+    it.todo('/projects/:projectId (DELETE) - delete project by Admin -- success');
+    
+  })
 
   afterAll(async () => {
     await Promise.all([
