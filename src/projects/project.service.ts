@@ -78,7 +78,6 @@ export class ProjectService {
     if (userInProject) {
       throw new BadRequestException(`User #${userId} already in project`)
     }
-    console.log('run repository function...')
     await this.projectsRepository.addUserInProject(project, user);
     return await this.getProjectById(projectId, currUser)
   }
