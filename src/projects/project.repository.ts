@@ -6,6 +6,8 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UserEntity } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
+import { TaskEntity } from './../tasks/task.entity';
+
 @EntityRepository(ProjectEntity)
 export class ProjectRepository extends Repository<ProjectEntity> {
   
@@ -72,6 +74,13 @@ export class ProjectRepository extends Repository<ProjectEntity> {
       .relation("users")
       .of(project)
       .add(user);
+  }
+
+  async addTaskInProject(project: ProjectEntity, task: TaskEntity): Promise<void> {
+    return await this.createQueryBuilder()
+      .relation("tasks")
+      .of(project)
+      .add(task);
   }
 
   async removeUserFromProject(project: ProjectEntity, user: UserEntity): Promise<void> {

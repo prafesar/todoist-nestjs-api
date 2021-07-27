@@ -53,8 +53,7 @@ export class TasksRepository extends Repository<TaskEntity> {
       priority: TaskPriority.MEDIUM,
     });
 
-    await this.save(task);
-    return task;
+    return await this.save(task);
   }
 
 }
