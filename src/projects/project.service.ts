@@ -70,15 +70,17 @@ export class ProjectService {
     return this.projectsRepository.saveProject(project);
   }
 
-  async addUserInProject(projectId: string, userId: string, currUser: UserEntity): Promise<void> {
+  async addUserInProject(projectId: string, userId: string, currUser: UserEntity): Promise<ProjectEntity> {
     const project = await this.getProjectById(projectId, currUser)
+    
     const user = await this.usersService.getUserById(userId);
     const userInProject = project.users.findIndex(user => user.id === userId) >= 0;
-    
     if (userInProject) {
       throw new BadRequestException(`User #${userId} already in project`)
     }
-    return await this.projectsRepository.addUserInProject(project, user);
+    console.log('run repository function...')
+    await this.projectsRepository.addUserInProject(project, user);
+    return await this.getProjectById(projectId, currUser)
   }
 
   async removeUserFromProject(

@@ -94,9 +94,9 @@ export class ProjectController {
     @Param('id') projectId: string,
     @Body('userId') userId: string,
     @GetUser() currUser: UserEntity,
-  ): Promise<void> {
-    return await this.projectsService.addUserInProject(projectId, userId, currUser);
-    // return this.projectsService.buildProjectResponse(project)
+  ): Promise<ProjectResponseInterface> {
+    const project = await this.projectsService.addUserInProject(projectId, userId, currUser);
+    return this.projectsService.buildProjectResponse(project)
   }
 
   /**
