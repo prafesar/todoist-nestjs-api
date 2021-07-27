@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Like, Repository } from 'typeorm';
 
 import { ProjectEntity } from './project.entity';
 import { ProjectStatus } from './project-status.enum';
@@ -6,28 +6,28 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { GetProjectsFilterDto } from './dto/get-projects-filter.dto';
 import { UserEntity } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
-
 @EntityRepository(ProjectEntity)
 export class ProjectRepository extends Repository<ProjectEntity> {
-  // view list of projects
-  async getProjects(
+  
+  // view filtred list of projects
+  async getFiltredProjectList(
     filterDto: GetProjectsFilterDto
   ): Promise<ProjectEntity[]> {
-    
+    let where = {};
+    const relations = { relations: ['author', 'tasks', 'users']};
     const { status, search } = filterDto;
-
-    const query = this.createQueryBuilder('project');
-    
-    status && query.andWhere('project.status = :status', { status });
-    
+   
     if (search) {
-      query.andWhere(
-        'LOWER(project.title) LIKE LOWER(:search) OR LOWER(project.description) LIKE LOWER(:search)',
-        { search: `%${search}%` },
-      );
+      where = Object.assign( where, { title: Like(`%${search}%`)});
     }
 
-    const projects = await query.getMany();
+    if (status) {
+      where = Object.assign( where, { status });
+    }
+
+    const options = Object.assign(relations, { where })
+    const projects = this.find(options);
+    
     return projects ? projects : [];
   }
 
@@ -39,6 +39,8 @@ export class ProjectRepository extends Repository<ProjectEntity> {
       ...createProjectDto,
       status: ProjectStatus.OPEN,
       author,
+      tasks: [],
+      users: [],
     });
 
     return await this.save(project);
