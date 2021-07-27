@@ -5,36 +5,26 @@ import { TaskEntity } from './task.entity';
 import { ProjectEntity } from '../projects/project.entity';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskPriority } from '../common/enums/task-priority.enum';
 
 @EntityRepository(TaskEntity)
 export class TasksRepository extends Repository<TaskEntity> {
 
-  async getTasks(filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
-    const {
-      status,
-      priority,
-      search,
-      // projectId,
-      // userId,
-    } = filterDto;
+  async getTasks(currUser: UserEntity): Promise<TaskEntity[]> {
+    return await this.find({
+      relations: ['author', 'project'],
+      where: {
+        author: {
+          id: currUser.id
+        }
+      }
+    })
+  }
 
-    const query = this.createQueryBuilder('task');
-    
-    // projectId && query.andWhere ('task.project = :project', { projectId });
-    status && query.andWhere('task.status = :status', { status });
-    priority && query.andWhere('task.priority = :priority', { priority });
-    
-    if (search) {
-      query.andWhere(
-        'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
-        { search: `%${search}%` },
-      );
-    }
-
-    const tasks = await query.getMany();
-    return tasks;
+  async getTaskById(id: string) {
+    return await this.findOne(id, {
+      relations: ['author', 'project']
+    })
   }
 
   async createTask(

@@ -7,11 +7,11 @@ import { TaskEntity } from './task.entity';
 import { TaskPriority } from '../common/enums/task-priority.enum';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TasksRepository } from './tasks.repository';
 import { CommentsService } from '../comments/comments.service';
 import { CreateCommentDto } from '../comments/dto/create-comment.dto';
 import { TaskResponseInterface } from './types/task-response.interface';
+import { TaskListResponseInterface } from './types/task-list-response.intreface';
 
 @Injectable()
 export class TasksService {
@@ -21,12 +21,12 @@ export class TasksService {
     private readonly commentsService: CommentsService,
   ) {}
 
-  getTasks(filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
-    return this.tasksRepository.getTasks(filterDto);
+  getTasks(currUser: UserEntity): Promise<TaskEntity[]> {
+    return this.tasksRepository.getTasks(currUser);
   }
 
   async getTaskById(id: string): Promise<TaskEntity> {
-    const found = await this.tasksRepository.findOne(id);
+    const found = await this.tasksRepository.getTaskById(id);
     if (!found) {
       throw new NotFoundException(`Task with ID: ${id} not found`);
     }
@@ -84,6 +84,14 @@ export class TasksService {
         projectId: project.id
       },
     };
+  }
+
+  buildTaskListResponse(tasks: TaskEntity[]): TaskListResponseInterface {
+    const result = tasks.map(task => this.buildTaskResponse(task).task);
+    return {
+      tasks: result,
+      count: result.length,
+    }
   }
 
 }
