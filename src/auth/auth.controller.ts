@@ -6,8 +6,8 @@ import {
   Req,
   Get,
 } from '@nestjs/common';
+import { ApiBasicAuth, ApiOAuth2 } from '@nestjs/swagger';
 import { UserEntity } from 'src/users/user.entity';
-import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserAuthResponseInterface } from '../users/types/user-auth-response.interface';
@@ -26,6 +26,7 @@ export class AuthController {
     return this.authService.buildAuthUserResponse(newUser, 'local', ''); 
   }
 
+  @ApiBasicAuth()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   login(@Body() dto: AuthCredentialsDto): Promise<UserAuthResponseInterface> {
