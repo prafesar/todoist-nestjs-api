@@ -21,13 +21,12 @@ export class ProjectService {
     private usersService: UsersService,
   ) {}
 
-  getProjects(filterDto: GetProjectsFilterDto = {}): Promise<ProjectEntity[]> {
-    return this.projectsRepository.getProjects(filterDto);
+  async getProjects(filterDto: GetProjectsFilterDto): Promise<ProjectEntity[]> {
+    return await this.projectsRepository.getFiltredProjectList(filterDto);
   }
 
   async getProjectById(id: string, currUser: UserEntity): Promise<ProjectEntity> {
     const project = await this.projectsRepository.getProjectById(id)
-
     if (!project) {
       throw new NotFoundException('the project was not found');
     }
@@ -99,21 +98,26 @@ export class ProjectService {
   }
 
   buildProjectResponse(project: ProjectEntity): ProjectResponseInterface {
-    const { author, tasks, users, ...rest } = project;
-    return {
+    const { author: { id }, tasks, users, ...rest } = project;
+    const report = {
       project: {
         ...rest,
-        authorId: author.id,
+        authorId: id,
       },
       users: users.map(({ id }) => id),
       tasks: tasks.map(({ id }) => id),
     };
+    return report;
   }
 
-  buildProjectListResponse(projects: ProjectEntity[]): ProjectListResponseInterfase {
+  buildProjectListResponse(projects: ProjectEntity[]): ProjectListResponseInterfase | [] {
+    if (!projects.length) {
+      return [];
+    }
     const result = projects.map(project => this.buildProjectResponse(project));
     return {
       projects: result,
+      count: result.length,
     }
   }
 }
