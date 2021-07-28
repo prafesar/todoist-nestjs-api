@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { DeleteResult, EntityRepository, InsertResult, Repository } from 'typeorm';
 
 import { UserEntity } from '../users/user.entity';
 import { TaskEntity } from './task.entity';
@@ -6,6 +6,7 @@ import { ProjectEntity } from '../projects/project.entity';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskPriority } from '../common/enums/task-priority.enum';
+import { CommentEntity } from 'src/comments/comment.entity';
 
 @EntityRepository(TaskEntity)
 export class TasksRepository extends Repository<TaskEntity> {
@@ -23,8 +24,16 @@ export class TasksRepository extends Repository<TaskEntity> {
 
   async getTaskById(id: string) {
     return await this.findOne(id, {
-      relations: ['author', 'project']
+      relations: ['author', 'project', 'comments']
     })
+  }
+
+  async deleteTaskById(id: string): Promise<DeleteResult> {
+    return await this.delete(id)
+  }
+
+  async saveTask(task: TaskEntity): Promise<TaskEntity> {
+    return await this.save(task);
   }
 
   async createTask(
@@ -46,4 +55,10 @@ export class TasksRepository extends Repository<TaskEntity> {
     return await this.save(task);
   }
 
+  async addCommentToTask(task: TaskEntity, comment: CommentEntity): Promise<void> {
+    return await this.createQueryBuilder()
+    .relation('comments')
+    .of(task)
+    .add(comment);
+  }
 }
