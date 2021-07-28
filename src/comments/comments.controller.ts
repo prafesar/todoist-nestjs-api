@@ -1,13 +1,14 @@
 import { Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
 
 import { CommentsService } from './comments.service';
-import { CommentEntity } from './comment.entity';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from '../common/enums/user-role.enum';
 import { Roles } from '../common/decorators/roles.decorator';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { UserEntity } from '../users/user.entity';
+import { DeleteResult } from 'typeorm';
+import { CommentResponseInterface } from './types/comment-response.interface';
 
 @UseGuards(RolesGuard)
 @Roles(UserRole.USER)
@@ -18,24 +19,26 @@ export class CommentsController {
   ) {}
 
   @Get('/:id')
-  getComment(@Param('id') id: string): Promise<CommentEntity> {
-    return this.commentsService.getCommentById(id);
+  async getComment(@Param('id') id: string): Promise<CommentResponseInterface> {
+    const result = await this.commentsService.getCommentById(id);
+    return this.commentsService.buildCommentResponse(result);
   }
 
   // only owner
   @Patch('/:id')
-  updateComment(
+  async updateComment(
     @Param('id') id: string, 
     updateComment: UpdateCommentDto,
     @GetUser() currUser: UserEntity,
-  ): Promise<CommentEntity> {
-    return this.commentsService.updateComment(id, updateComment, currUser);
+  ): Promise<CommentResponseInterface> {
+    const result = await this.commentsService.updateComment(id, updateComment, currUser);
+    return this.commentsService.buildCommentResponse(result);
   }
 
   @Roles(UserRole.ADMIN)
   @Delete('/:id')
-  deleteComment(@Param('id') id: string): Promise<void> {
-    return this.commentsService.deleteCommentById(id);
+  deleteComment(@Param('id') id: string): Promise<DeleteResult> {
+    return this.commentsService.removeCommentById(id);
   }
 
 }
