@@ -1,5 +1,5 @@
 require('dotenv')
-  .config({ path: `./.env.stage.${process.env.STAGE}`})
+  .config({ path: __dirname + `/.env.stage.${process.env.STAGE}`})
 
 const dbConfig = {
   type: 'postgres',
@@ -12,7 +12,7 @@ const dbConfig = {
   synchronize: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
-    migrationsDir: 'src/migrations',
+    migrationsDir: 'migrations',
   },
 };
 
