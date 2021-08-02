@@ -24,6 +24,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ProjectResponseInterface } from './types/project-response.interface';
 import { ProjectListResponseInterfase } from './types/project-list-response.interface';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -31,24 +32,35 @@ import { ProjectListResponseInterfase } from './types/project-list-response.inte
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) { }
 
+  /**
+   * Create new project
+   */
   @Post()
+  
+  @ApiTags('Admin')
   async createProject(
-    @Body() createProjectDto: CreateProjectDto,
+    @Body('project') createProjectDto: CreateProjectDto,
     @GetUser() author: UserEntity,
   ): Promise<ProjectResponseInterface> {
     const project = await this.projectsService.createProject(author, createProjectDto);
     return this.projectsService.buildProjectResponse(project);
   }
 
+  /**
+   * Get list of projects
+   */
   @Roles(UserRole.USER)
   @Get()
   async getProjects(
     @Query() filterDto: GetProjectsFilterDto = {},
-  ): Promise<ProjectListResponseInterfase> {
+  ): Promise<ProjectListResponseInterfase | []> {
     const projects = await this.projectsService.getProjects(filterDto);
     return this.projectsService.buildProjectListResponse(projects)
   }
 
+  /**
+   * Get project info by Id if user in project or is admin
+   */
   @Roles(UserRole.USER)
   @Get('/:id')
   async getProjectById(
@@ -59,6 +71,9 @@ export class ProjectController {
     return this.projectsService.buildProjectResponse(project)
   }
 
+  /**
+   * Add task in project
+   */
   @Roles(UserRole.USER)
   @Post('/:id/tasks')
   async addTaskInProject(
@@ -70,19 +85,25 @@ export class ProjectController {
     return this.projectsService.buildProjectResponse(result);
   }
 
-  // admin
+  /**
+   * Add user in project
+   */
   @Post('/:id/users')
+  @ApiTags('Admin')
   async addUserInProject(
     @Param('id') projectId: string,
     @Body('userId') userId: string,
     @GetUser() currUser: UserEntity,
-  ): Promise<void> {
-    return await this.projectsService.addUserInProject(projectId, userId, currUser);
-    // return this.projectsService.buildProjectResponse(project)
+  ): Promise<ProjectResponseInterface> {
+    const project = await this.projectsService.addUserInProject(projectId, userId, currUser);
+    return this.projectsService.buildProjectResponse(project)
   }
 
-  // admin
+  /**
+   * Remove user from project
+   */
   @Delete('/:id/users')
+  @ApiTags('Admin')
   async removeUserFromProject(
     @Param('id') projectId: string,
     @Body('userId') userId: string,
@@ -91,14 +112,20 @@ export class ProjectController {
     return await this.projectsService.removeUserFromProject(projectId, userId, currUser);
   }
 
-  // admin
+  /**
+   * Delete project
+   */
   @Delete('/:id')
+  @ApiTags('Admin')
   deleteProject(@Param('id') id: string): Promise<void> {
     return this.projectsService.deleteProject(id);
   }
 
-  // admin
+  /**
+   * Update project status
+   */
   @Patch('/:id/status')
+  @ApiTags('Admin')
   updateProjectStatus(
     @Param('id') id: string,
     @Body() updateProject: UpdateProjectStatusDto,

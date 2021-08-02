@@ -1,40 +1,39 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { DeleteResult, EntityRepository, InsertResult, Repository } from 'typeorm';
 
 import { UserEntity } from '../users/user.entity';
 import { TaskEntity } from './task.entity';
 import { ProjectEntity } from '../projects/project.entity';
 import { TaskStatus } from '../common/enums/task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskPriority } from '../common/enums/task-priority.enum';
+import { CommentEntity } from 'src/comments/comment.entity';
 
 @EntityRepository(TaskEntity)
 export class TasksRepository extends Repository<TaskEntity> {
 
-  async getTasks(filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
-    const {
-      status,
-      priority,
-      search,
-      // projectId,
-      // userId,
-    } = filterDto;
+  async getTasks(currUser: UserEntity): Promise<TaskEntity[]> {
+    return await this.find({
+      relations: ['author', 'project'],
+      where: {
+        author: {
+          id: currUser.id
+        }
+      }
+    })
+  }
 
-    const query = this.createQueryBuilder('task');
-    
-    // projectId && query.andWhere ('task.project = :project', { projectId });
-    status && query.andWhere('task.status = :status', { status });
-    priority && query.andWhere('task.priority = :priority', { priority });
-    
-    if (search) {
-      query.andWhere(
-        'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
-        { search: `%${search}%` },
-      );
-    }
+  async getTaskById(id: string) {
+    return await this.findOne(id, {
+      relations: ['author', 'project', 'comments']
+    })
+  }
 
-    const tasks = await query.getMany();
-    return tasks;
+  async deleteTaskById(id: string): Promise<DeleteResult> {
+    return await this.delete(id)
+  }
+
+  async saveTask(task: TaskEntity): Promise<TaskEntity> {
+    return await this.save(task);
   }
 
   async createTask(
@@ -53,8 +52,13 @@ export class TasksRepository extends Repository<TaskEntity> {
       priority: TaskPriority.MEDIUM,
     });
 
-    await this.save(task);
-    return task;
+    return await this.save(task);
   }
 
+  async addCommentToTask(task: TaskEntity, comment: CommentEntity): Promise<void> {
+    return await this.createQueryBuilder()
+    .relation('comments')
+    .of(task)
+    .add(comment);
+  }
 }

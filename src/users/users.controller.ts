@@ -17,6 +17,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserResponseInterface } from './types/user-response.interface';
 import { UserListResponseInterface } from './types/user-list-response.interface';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -25,6 +26,7 @@ export class UsersController {
   constructor( private usersService: UsersService) {}
   
   @Get()
+  @ApiTags('Admin')
   async getAllUsers(): Promise<UserListResponseInterface> {
     const users = await this.usersService.getAllUsers();
     return this.usersService.buildUserListResponse(users);
@@ -39,11 +41,13 @@ export class UsersController {
   
   @HttpCode(204)
   @Delete('/:id')
+  @ApiTags('Admin')
   deleteUser(@Param('id') id: string): Promise<object> {
     return this.usersService.deleteUser(id);
   }
 
   @Patch('/:id/roles')
+  @ApiTags('Admin')
   async updateUserRole(
     @Param('id') id: string,
     @Body() userRoleDto: UserRoleDto,

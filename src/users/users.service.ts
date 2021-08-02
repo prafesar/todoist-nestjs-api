@@ -83,9 +83,10 @@ export class UsersService {
 
   buildUserListResponse(users: UserEntity[]): UserListResponseInterface {
     return {
-      users: {
+      users: [
         ...users,
-      },
+      ],
+      count: users.length,
     };
   }
 

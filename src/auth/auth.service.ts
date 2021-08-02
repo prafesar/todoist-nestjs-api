@@ -52,7 +52,7 @@ export class AuthService {
     return sign(
       {
         id: user.id,
-        username: user.login,
+        login: user.login,
         email: user.email,
         role: user.role,
       },

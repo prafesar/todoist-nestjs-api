@@ -9,9 +9,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   
   const config = new DocumentBuilder()
-    .setTitle('ToDO example')
-    .setDescription('The Todo API description')
+    .setTitle('Todoist Service')
+    .setDescription(`Lets's manage your tasks`)
     .setVersion('1.0')
+    .addBasicAuth()
+    .addOAuth2()
+    .addBearerAuth()
     .addTag('todo')
     .build();
   const document = SwaggerModule.createDocument(app, config);
