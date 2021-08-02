@@ -8,8 +8,8 @@ const dbConfig = {
   database: process.env.DB_DATABASE,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
+  synchronize: process.env.DB_SYNCHRONIZE,
   entities: ['**/*.entity.js'],
-  synchronize: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
     migrationsDir: 'migrations',
