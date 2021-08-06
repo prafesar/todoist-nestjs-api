@@ -25,7 +25,9 @@
     "db:sync": "npm run typeorm schema:sync",
     "migration:generate": "npm run typeorm migration:generate -- -o -n",
     "migration:create": "npm run typeorm migration:create -- -o -n",
-    "migration:run": "npm run typeorm migration:run"
+    "migration:run": "npm run typeorm migration:run",
+    "docker:dev": "docker-compose --env-file .env.stage.dev -f docker-compose.yml --f docker-compose.development.yml up --build",
+    "docker:prod": "docker-compose --env-file .env.stage.prod up --build"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
